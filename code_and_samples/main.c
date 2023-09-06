@@ -9,14 +9,25 @@
 #include "cbmp.h"
 
 //Function to invert pixels of an image (negative)
-void invert(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+  int sum;
   for (int x = 0; x < BMP_WIDTH; x++)
   {
     for (int y = 0; y < BMP_HEIGTH; y++)
     {
+      sum = 0;
       for (int c = 0; c < BMP_CHANNELS; c++)
       {
-      output_image[x][y][c] = 255 - input_image[x][y][c];
+        sum += input_image[x][y][c];
+      }
+      if (sum >= 300){
+        for(int i = 0; i < 3; i++){
+          output_image[x][y][i] = 255;
+        }
+      } else {
+        for(int i = 0; i < 3; i++){
+          output_image[x][y][i] = 0;
+        }
       }
     }
   }
@@ -47,7 +58,7 @@ int main(int argc, char** argv)
   read_bitmap(argv[1], input_image);
 
   //Run inversion
-  invert(input_image,output_image);
+  toGreyScale(input_image,output_image);
 
   //Save image to file
   write_bitmap(output_image, argv[2]);
