@@ -102,6 +102,28 @@ void erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], uns
 }
 
 
+void count(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+  int radius = 5;
+  for (int x = 0; x < BMP_WIDTH; x++){
+    for (int y = 0; y < BMP_HEIGTH; y++){
+      if(checkPixel(control_image[x][y])){
+        int xx = x;
+        int yy = y;
+        if (x < 5){
+          if(y < 5){
+
+          }
+          if(y > (BMP_HEIGTH-5)){
+            
+          }
+        }
+
+      }
+    }
+  }
+}
+
+
   //Declaring the array to store the image (unsigned char = unsigned 8 bit)
   unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
   unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
