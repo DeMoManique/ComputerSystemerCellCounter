@@ -67,7 +67,7 @@ void erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], uns
 
   }
 }
-int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y,  int radius){
   int length = 0;
   for (int a = y-radius; a<= y+radius;a++){
     if((!(a<0) && !(a>=BMP_HEIGTH) && checkPixel(image[x-radius][a]))){
@@ -77,7 +77,7 @@ int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], un
   return 0;
 }
 
-int squareCheckRight(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+int squareCheckRight(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y,  int radius){
   for (int a = y-radius; a<= y+radius;a++){
     if((!(a<0) && !(a>=BMP_HEIGTH) && checkPixel(image[x+radius][a]))){
       return 1;
@@ -85,7 +85,7 @@ int squareCheckRight(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], u
   }
   return 0;
 }
-int squareCheckAbove(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+int squareCheckAbove(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y,  int radius){
   for (int a = x-radius; a<= x+radius;a++){
     if((!(a<0) && !(a>=BMP_WIDTH) && checkPixel(image[a][y-radius]))){
       return 1;
@@ -94,7 +94,7 @@ int squareCheckAbove(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], u
   return 0;
 }
 
-int squareCheckBelow(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+int squareCheckBelow(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y,  int radius){
   for (int a = x-radius; a<= x+radius;a++){
     if((!(a<0) && !(a>=BMP_WIDTH) && checkPixel(image[a][y+radius]))){
       return 1;
@@ -106,7 +106,7 @@ int squareCheckBelow(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], u
 int countCells( unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
             unsigned int count,
             unsigned int coords[950][2],
-            unsigned int radius){
+            int radius){
   int detected = 0;
     for (int x = 0; x < BMP_WIDTH; x++){
       for(int y = 0; y < BMP_HEIGTH; y++){
@@ -171,6 +171,9 @@ int main(int argc, char** argv)
     erode(control_image,output_image);
     printf("counting\n");
     count = countCells(output_image,count,coords,10);
+    if(i==0){
+      write_bitmap(output_image,argv[5]);
+    }
   }
   printf("finished eroding\n");
   printf("final count %d",count);
