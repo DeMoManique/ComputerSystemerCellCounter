@@ -8,6 +8,11 @@
 #include <stdio.h>
 #include "cbmp.h"
 
+  //Declaring the array to store the image (unsigned char = unsigned 8 bit)
+  unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+  unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+  unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+
 void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
   int sum;
   for (int x = 0; x < BMP_WIDTH; x++)
@@ -19,7 +24,7 @@ void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
       {
         sum += input_image[x][y][c];
       }
-      if (sum >= 300){
+      if (sum >= 260){
         for(int i = 0; i < 3; i++){
           output_image[x][y][i] = 255;
         }
@@ -36,8 +41,7 @@ int checkPixel(unsigned char rgb[BMP_CHANNELS]){
   return 0;
 }
 
-void erode( unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
-            unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+void erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
   for(int x = 0; x < BMP_WIDTH; x++){
     for (int y = 0; y < BMP_HEIGTH; y++){
       if(checkPixel(control_image[x][y])){
@@ -63,131 +67,112 @@ void erode( unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
 
   }
 }
+int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+  int length = 0;
+  for (int a = y-radius; a<= y+radius;a++){
+    if((!(a<0) && !(a>=BMP_HEIGTH) && checkPixel(image[x-radius][a]))){
+      return 1;
+    } 
+  }
+  return 0;
+}
 
+int squareCheckRight(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+  for (int a = y-radius; a<= y+radius;a++){
+    if((!(a<0) && !(a>=BMP_HEIGTH) && checkPixel(image[x+radius][a]))){
+      return 1;
+    } 
+  }
+  return 0;
+}
+int squareCheckAbove(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+  for (int a = x-radius; a<= x+radius;a++){
+    if((!(a<0) && !(a>=BMP_WIDTH) && checkPixel(image[a][y-radius]))){
+      return 1;
+    } 
+  }
+  return 0;
+}
 
-int countCells( unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-            unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
+int squareCheckBelow(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned int x, unsigned int y, unsigned int radius){
+  for (int a = x-radius; a<= x+radius;a++){
+    if((!(a<0) && !(a>=BMP_WIDTH) && checkPixel(image[a][y+radius]))){
+      return 1;
+    } 
+  }
+  return 0;
+}
+
+int countCells( unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
             unsigned int count,
-            unsigned int coords[950][2]){
-  int radius = 5;
+            unsigned int coords[950][2],
+            unsigned int radius){
   int detected = 0;
-  //for (int x = 0; x < 5; x++){
-  //  for (int y = 0; y < 5; y++){
-  //    if(checkPixel(control_image[x][y])){
-  //      for(int a = 0; a < x+5; a++){
-  //        if(checkPixel(control_image[a][y+5])){
-  //
-  //        }
-  //      }
-  //      for(int a = 0; a < y+5; a++){
-  //        if(checkPixel(control_image[x+5][a])){
-  //          
-  //        }
-  //      }
-  //    }
-  //  }
-  //  for (int y = 5; y < BMP_HEIGTH-5; y++){
-  //
-  //  }
-  //}
-  //for(int y = 0; y < 5; y++){
-  //  for(int x = 5; x < BMP_WIDTH-5;x++){
-  //
-  //  }
-  //}
-  for(int x = 5; x < BMP_WIDTH-5;x++){
-    for(int y = 5; y < BMP_HEIGTH-5;y++){
-      detected = 0;
-      if(checkPixel(control_image[x][y])){
-        for(int a = x-5; a <= x+5; a++){
-          if(checkPixel(control_image[a][y+5])){
-            detected = 1;
-          }
-          if(checkPixel(control_image[a][y-5])){
-            detected = 1;
-          }
-        }
-        for(int a = y-5; a <= y+5; a++){
-          if(checkPixel(control_image[x+5][a])){
-            detected = 1;
-          }
-          if(checkPixel(control_image[x-5][a])){
-            detected = 1;
-          }
-        }
-        if(detected){continue;}
-        coords[count][0]=x;
-        coords[count][1]=y;
-        count++;
-        for(int a = x-5; a <= x+5;a++){
-          for(int b = y-5; b <= y+5; b++){
-            for(int i = 0; i < 3; i++){
-              control_image[a][b][i] = 0;
-              output_image[a][b][i] = 0;
-            }
-          }
+    for (int x = 0; x < BMP_WIDTH; x++){
+      for(int y = 0; y < BMP_HEIGTH; y++){
+        if(checkPixel(image[x][y])){
+          if( ((y>=radius) && squareCheckAbove(image,x,y,radius))||
+              ((y<(BMP_HEIGTH-radius)) && squareCheckBelow(image,x,y,radius))||
+              ((x>=radius) && squareCheckLeft(image,x,y,radius))||
+              ((x<(BMP_WIDTH-radius)) && squareCheckRight(image,x,y,radius))){
+                continue;
+              }else {
+                coords[count][0] = x;
+                coords[count][1] = y;
+                printf("%d %d\n", x,y);
+                count++;
+                for(int a = x-radius; a <= x+radius; a++){
+                  for(int b = y-radius; b <= y+radius; b++){
+                    if(a >= 0 && a < BMP_WIDTH && b>= 0 && b <=BMP_HEIGTH){
+                      for(int i = 0; i < 3; i++){
+                        image[a][b][i] = 0;
+                      }
+                    }
+                  }
+                }
+                x+=radius;
+              }
+           
         }
       }
     }
-  }
-  printf("%d ",count);
-  return count;
+    return count;
 }
 
 
-  //Declaring the array to store the image (unsigned char = unsigned 8 bit)
-  unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-  unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-  unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 
 //Main function
 int main(int argc, char** argv)
 {
-  //argc counts how may arguments are passed
-  //argv[0] is a string with the name of the program
-  //argv[1] is the first command line argument (input image)
-  //argv[2] is the second command line argument (output image)
 
-  //Checking that 2 arguments are passed
-  //if (argc != 3)
-  //{
-  //    fprintf(stderr, "Usage: %s <output file path> <output file path>\n", argv[0]);
-  //    exit(1);
-  //}
-
-  printf("Example program - 02132 - A1\n");
 
   //Load image from file
+  printf("loading image\n");
   read_bitmap(argv[1], input_image);
 
   //Run inversion
-  toGreyScale(input_image,control_image);
+  printf("GreyScaling\n");
   toGreyScale(input_image,output_image);
-  //erode(control_image,output_image);
-  //write_bitmap(output_image, argv[2]);
-  //erode(output_image,control_image);
-  //write_bitmap(control_image, argv[3]);
-  //erode(control_image,output_image);
-  //write_bitmap(output_image, argv[4]);
-  //erode(output_image,control_image);
-  //write_bitmap(control_image, argv[5]);
-  //erode(control_image,output_image);
-  //write_bitmap(output_image, argv[6]);
-  //erode(output_image,control_image);
-  //write_bitmap(control_image, argv[7]);
-  //erode(control_image,output_image);
-  //write_bitmap(output_image, argv[8]);
-  //erode(output_image,control_image);
-  //write_bitmap(control_image, argv[9]);
-  //erode(control_image,output_image);
+
   int unsigned count=0;
   int unsigned coords[950][2];
-  for(int i = 0; i <5; i++){
-    erode(output_image,control_image);
-    count = countCells(control_image,output_image,count,coords);
+  write_bitmap(output_image, argv[4]);
+  printf("Beginning erode\n");
+  for(int i = 0; i <10; i++){
+    printf("Copying image\n");
+    for(int x = 0; x < BMP_WIDTH; x++){
+      for (int y = 0; y < BMP_HEIGTH; y++){
+        for(int i = 0; i < 3; i++){
+          control_image[x][y][i]=output_image[x][y][i];
+        }
+      }
+    }
+    printf("Eroding\n");
     erode(control_image,output_image);
-    count = countCells(output_image,control_image,count,coords);
+    printf("counting\n");
+    count = countCells(output_image,count,coords,10);
   }
+  printf("finished eroding\n");
   printf("final count %d",count);
   for(int x=0; x < BMP_WIDTH;x++){
     for(int y = 0; y < BMP_HEIGTH;y++){
@@ -198,17 +183,20 @@ int main(int argc, char** argv)
   }
   write_bitmap(output_image,argv[2]);
   for(int i = 0; i < count; i++){
-    for(int a = coords[i][0]-10; a < coords[i][0]+10;a++){
-      for(int b = coords[i][1]-3; b < coords[i][1]+3;b++){
-      output_image[a][b][1]=0;
-      output_image[a][b][2]=0;
+    for(int a = coords[i][0]-5; a <= coords[i][0]+5;a++){
+      if(a>=0 && a < BMP_WIDTH){
+        output_image[a][coords[i][1]][0]=255;
+        output_image[a][coords[i][1]][1]=0;
+        output_image[a][coords[i][1]][2]=0;
+      }
+      
     }
-    }
-    for(int a = coords[i][0]-3; a < coords[i][0]+3;a++){
-      for(int b = coords[i][1]-10; b < coords[i][1]+10;b++){
-      output_image[a][b][1]=0;
-      output_image[a][b][2]=0;
-    }
+      for(int b = coords[i][1]-5; b <= coords[i][1]+5;b++){
+        if(b >= 0&& b < BMP_HEIGTH){
+          output_image[coords[i][0]][b][0]=255;
+          output_image[coords[i][0]][b][1]=0;
+          output_image[coords[i][0]][b][2]=0;
+        }
     }
   }
   write_bitmap(output_image,argv[3]);
