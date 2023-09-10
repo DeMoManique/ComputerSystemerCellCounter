@@ -46,9 +46,9 @@ void erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], uns
     for (int y = 0; y < BMP_HEIGTH; y++){
       if(checkPixel(control_image[x][y])){
         if(!( ((x==0)         || checkPixel(control_image[x-1][y]))&&
-              ((x==BMP_WIDTH) || checkPixel(control_image[x+1][y]))&&
+              ((x==BMP_WIDTH-1) || checkPixel(control_image[x+1][y]))&&
               ((y==0)         || checkPixel(control_image[x][y-1]))&&
-              ((y==BMP_HEIGTH)|| checkPixel(control_image[x][y+1])))){
+              ((y==BMP_HEIGTH-1)|| checkPixel(control_image[x][y+1])))){
             for(int i=0; i<3;i++){
                 output_image[x][y][i] = 0;
               }
