@@ -8,8 +8,6 @@
 #include <stdio.h>
 #include "cbmp.h"
 
-#define threashold 260
-
   //Declaring the array to store the image (unsigned char = unsigned 8 bit)
   unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
   unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
@@ -36,7 +34,7 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
       for (int c = 0; c < BMP_CHANNELS; c++){ //Sums up the rgb value
         sum += input_image[x][y][c];
       }
-      if (sum >= threashold){ //checks with higher treshold instead of averaging (is that a word?) values 
+      if (sum >= threshold){ //checks with higher treshold instead of averaging (is that a word?) values 
         for(int i = 0; i < 3; i++){
           output_image[x][y][i] = 255;
         }
