@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include "cbmp.h"
 
-<<<<<<< HEAD
 #define threashold 260
 
   //Declaring the array to store the image (unsigned char = unsigned 8 bit)
@@ -19,7 +18,6 @@
 
 //Function to invert the image to black and white
 void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
-=======
 //Declaring the array to store the image (unsigned char = unsigned 8 bit)
 unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
@@ -29,7 +27,6 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
                   unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
                   int threshold){
->>>>>>> ba66b3dc9332592a0cc61b820a0e0dffa17353c1
   int sum;
   for (int x = 0; x < BMP_WIDTH; x++)
   {
@@ -39,11 +36,7 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
       for (int c = 0; c < BMP_CHANNELS; c++){ //Sums up the rgb value
         sum += input_image[x][y][c];
       }
-<<<<<<< HEAD
-      if (sum >= threashold){
-=======
-      if (sum >= threshold){ //checks with higher treshold instead of averaging (is that a word?) values 
->>>>>>> ba66b3dc9332592a0cc61b820a0e0dffa17353c1
+      if (sum >= threashold){ //checks with higher treshold instead of averaging (is that a word?) values 
         for(int i = 0; i < 3; i++){
           output_image[x][y][i] = 255;
         }
@@ -55,28 +48,18 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
     }
   }
 }
-<<<<<<< HEAD
 
-//Function to check if a pixel is white
-=======
 //Function to check if pixel is black or white (is not needed but looks pretty)
->>>>>>> ba66b3dc9332592a0cc61b820a0e0dffa17353c1
 int checkPixel(unsigned char rgb[BMP_CHANNELS]){
   if(rgb[0] == 255) return 1;
   return 0;
 }
 
-<<<<<<< HEAD
-//Function to erode the image
-int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
-  int removed = 0;
-=======
 //Function that erodes the outer layer of cells
 //Returns int to be used in for loop later
 int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
           unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
   int removed = 0; //basically a boolean
->>>>>>> ba66b3dc9332592a0cc61b820a0e0dffa17353c1
   for(int x = 0; x < BMP_WIDTH; x++){
     for (int y = 0; y < BMP_HEIGTH; y++){
       if(checkPixel(control_image[x][y])){
@@ -94,12 +77,9 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
   }
   return removed;
 }
-<<<<<<< HEAD
 
 
-=======
 //bunch of functions to help scan for cells
->>>>>>> ba66b3dc9332592a0cc61b820a0e0dffa17353c1
 int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],  int x,  int y, int radius){
   for (int a = y-radius; a<= y+radius;a++){
     if((!(a<0) && !(a>BMP_HEIGTH) && checkPixel(image[x-radius][a]))){ //checks for edge cases first, then if the pixel is white
@@ -120,7 +100,7 @@ int squareCheckRight(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],  
 int squareCheckAbove(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],  int x,  int y, int radius){
   for (int a = x-radius; a<= x+radius;a++){
     if((!(a<0) && !(a>BMP_WIDTH) && checkPixel(image[a][y-radius]))){
-      return 1;
+      return 1; 
     } 
   }
   return 0;
