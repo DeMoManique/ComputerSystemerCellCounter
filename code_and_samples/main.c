@@ -8,14 +8,6 @@
 #include <stdio.h>
 #include "cbmp.h"
 
-  //Declaring the array to store the image (unsigned char = unsigned 8 bit)
-  unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-  unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-  unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-
-
-//Function to invert the image to black and white
-void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
 //Declaring the array to store the image (unsigned char = unsigned 8 bit)
 unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
@@ -24,7 +16,8 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 //Function to turn image into black and white
 void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
                   unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-                  int threshold){
+                  int threshold,
+                  int thresholdLower){
   int sum;
   for (int x = 0; x < BMP_WIDTH; x++)
   {
@@ -38,6 +31,10 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
         for(int i = 0; i < 3; i++){
           output_image[x][y][i] = 255;
         }
+      } else if(sum>=thresholdLower){
+        for(int i = 0; i < 3; i++){
+          output_image[x][y][i] = 150;
+        }
       } else {
         for(int i = 0; i < 3; i++){
           output_image[x][y][i] = 0;
@@ -49,7 +46,7 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
 
 //Function to check if pixel is black or white (is not needed but looks pretty)
 int checkPixel(unsigned char rgb[BMP_CHANNELS]){
-  if(rgb[0] == 255) return 1;
+  if(rgb[0] != 0) return 1;
   return 0;
 }
 
@@ -159,7 +156,8 @@ int main(int argc, char** argv)
   int crossWidth = 1;
 
   //analysis parameters
-  int threshold = 250;
+  int threshold = 270;
+  int thresholdLower = 220;
   int searchRadius = 7;
 
   //needed variables
@@ -172,7 +170,7 @@ int main(int argc, char** argv)
 
   //Converting image to black and white
   printf("Converting to black and white\n");
-  toBlackWhite(input_image,output_image,threshold);
+  toBlackWhite(input_image,output_image,threshold,thresholdLower);
   write_bitmap(output_image,argv[3]);
 
   //copies the modified image to control image
