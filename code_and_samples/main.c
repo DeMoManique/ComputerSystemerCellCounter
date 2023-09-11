@@ -73,6 +73,31 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
   return removed;
 }
 
+int checkLightPixel(unsigned char rgb[BMP_CHANNELS]){
+  if(rgb[0] == 150) return 1;
+  return 0;
+}
+
+int erodeFirst(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
+          unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
+  int removed = 0; //basically a boolean
+  for(int x = 0; x < BMP_WIDTH; x++){
+    for (int y = 0; y < BMP_HEIGTH; y++){
+      if(checkLightPixel(control_image[x][y])){
+        if(!( ((x==0)         || checkPixel(control_image[x-1][y]))&&  //Checks for edge case first, then checks if above pixel is white
+              ((x==BMP_WIDTH-1) || checkPixel(control_image[x+1][y]))&&   
+              ((y==0)         || checkPixel(control_image[x][y-1]))&&     
+              ((y==BMP_HEIGTH-1)|| checkPixel(control_image[x][y+1])))){  
+            for(int i=0; i<3;i++){
+                removed = 1;
+                output_image[x][y][i] = 0;
+              }
+        }
+      }
+    }
+  }
+  return removed;
+}
 
 //bunch of functions to help scan for cells
 int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],  int x,  int y, int radius){
@@ -156,8 +181,8 @@ int main(int argc, char** argv)
   int crossWidth = 1;
 
   //analysis parameters
-  int threshold = 270;
-  int thresholdLower = 220;
+  int threshold = 330;
+  int thresholdLower = 240;
   int searchRadius = 7;
 
   //needed variables
@@ -181,6 +206,18 @@ int main(int argc, char** argv)
         }
       }
     }
+while (erodeFirst(control_image,output_image)){ //while something was eroded
+    count = countCells(output_image,count,coords,searchRadius);
+    
+    for(int x = 0; x < BMP_WIDTH; x++){ //copies the modified image to control image
+      for (int y = 0; y < BMP_HEIGTH; y++){
+        for(int i = 0; i < 3; i++){
+          control_image[x][y][i]=output_image[x][y][i];
+        }
+      }
+    }
+  }
+
   while (erode(control_image,output_image)){ //while something was eroded
     count = countCells(output_image,count,coords,searchRadius);
     
