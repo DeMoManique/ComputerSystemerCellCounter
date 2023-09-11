@@ -1,7 +1,8 @@
 //To compile: gcc cbmp.c main.c -o main.exe -std=c99
 //To run: main.exe zimage.bmp output.bmp
 //To run template: main.exe "inputImagePath" "outputImagePath"
-// main.exe samples/medium/1MEDIUM.bmp samples/medium/1MEDIUMoutput.bmp
+// main.exe samples/medium/1MEDIUM.bmp samples/medium/1MEDIUMoutput.bmp samples/medium/1MEDIUMblackwhite.bmp
+//main.exe samples/easy/10EASY.bmp samples/easy/10EASYoutput.bmp samples/easy/10EASYblackwhite.bmp
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -161,6 +162,7 @@ int main(int argc, char** argv)
   //Converting image to black and white
   printf("Converting to black and white\n");
   toBlackWhite(input_image,output_image,threshold);
+  write_bitmap(output_image,argv[3]);
 
   //copies the modified image to control image
   for(int x = 0; x < BMP_WIDTH; x++){
