@@ -8,11 +8,15 @@
 #include <stdio.h>
 #include "cbmp.h"
 
+#define threashold 260
+
   //Declaring the array to store the image (unsigned char = unsigned 8 bit)
   unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
   unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
   unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 
+
+//Function to invert the image to black and white
 void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
   int sum;
   for (int x = 0; x < BMP_WIDTH; x++)
@@ -24,7 +28,7 @@ void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
       {
         sum += input_image[x][y][c];
       }
-      if (sum >= 260){
+      if (sum >= threashold){
         for(int i = 0; i < 3; i++){
           output_image[x][y][i] = 255;
         }
@@ -36,11 +40,14 @@ void toGreyScale(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
     }
   }
 }
+
+//Function to check if a pixel is white
 int checkPixel(unsigned char rgb[BMP_CHANNELS]){
   if(rgb[0] == 255) return 1;
   return 0;
 }
 
+//Function to erode the image
 int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]){
   int removed = 0;
   for(int x = 0; x < BMP_WIDTH; x++){
@@ -60,6 +67,8 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsi
   }
   return removed;
 }
+
+
 int squareCheckLeft(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],  int x,  int y, int radius){
   int length = 0;
   for (int a = y-radius; a<= y+radius;a++){
