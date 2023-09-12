@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 
   //analysis parameters
   int threshold = 330;
-  int thresholdLower = 240;
+  int thresholdLower = 245;
   int searchRadius = 7;
 
   //needed variables
@@ -196,6 +196,7 @@ int main(int argc, char** argv)
   //Converting image to black and white
   printf("Converting to black and white\n");
   toBlackWhite(input_image,output_image,threshold,thresholdLower);
+  count = countCells(output_image,count,coords, 13);
   write_bitmap(output_image,argv[3]);
 
   //copies the modified image to control image
@@ -208,7 +209,6 @@ int main(int argc, char** argv)
     }
 while (erodeFirst(control_image,output_image)){ //while something was eroded
     count = countCells(output_image,count,coords,searchRadius);
-    
     for(int x = 0; x < BMP_WIDTH; x++){ //copies the modified image to control image
       for (int y = 0; y < BMP_HEIGTH; y++){
         for(int i = 0; i < 3; i++){
@@ -220,7 +220,6 @@ while (erodeFirst(control_image,output_image)){ //while something was eroded
 
   while (erode(control_image,output_image)){ //while something was eroded
     count = countCells(output_image,count,coords,searchRadius);
-    
     for(int x = 0; x < BMP_WIDTH; x++){ //copies the modified image to control image
       for (int y = 0; y < BMP_HEIGTH; y++){
         for(int i = 0; i < 3; i++){
