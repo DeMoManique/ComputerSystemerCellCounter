@@ -17,7 +17,8 @@ double cpu_time_used;
 unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-unsigned char output_image_bit[BMP_WIDTH][119];
+unsigned char output_image_bit[952][119];
+unsigned char control_image_bit[952][119];
 
 // Function to turn image into black and white
 void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
@@ -60,34 +61,43 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
   }
 }
 
+// Function to turn image into black and white bit array with a true bit all around the image so it is 952x119
 void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-                          unsigned char output_image_bit[BMP_WIDTH][119],
+                          unsigned char output_image_bit[952][119],
                           int threshold)
 {
   int sum;
-  for (int x = 0; x < BMP_WIDTH; x++)
+  for (int x = 0; x <= BMP_WIDTH+1; x++)
   {
-    int yalt = 0; 
+    if (x == 0 || x == 951)
+    {
+      for (int y = 0; y < 119; y++)
+      {
+        output_image_bit[x][y] = 0xFF;
+      }
+      continue;
+    }
+    int yalt = 0;
     for (int y = 0; y < 119; y++)
     {
       char value = 0;
       for (int i = 0; i < 8; i++)
       {
-        if (yalt >= 950)
+        value = value << 1;
+
+        if (yalt == 0 || yalt == 951)
         {
-          for (i; i < 8; i++)
-          {
-            value << 1;
-          }
-          break;
+          value += 1;
+          yalt++;
+          continue;
         }
+
         sum = 0;
         for (int c = 0; c < BMP_CHANNELS; c++)
         { // Sums up the rgb value
           sum += input_image[x][y][c];
         }
 
-        value << 1;
         if (sum >= threshold)
         { // checks with higher treshold instead of averaging values
           value += 1;
@@ -95,6 +105,7 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
 
         yalt++;
       }
+      // De to sidste bits er altid 0 fordi 950 ikke er deleligt med 8
       output_image_bit[x][y] = value;
     }
   }
@@ -103,9 +114,32 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
 // Function to check if pixel is black or white (is not needed but looks pretty)
 int checkPixel(unsigned char rgb[BMP_CHANNELS])
 {
-  if (rgb[0] != 0)
-    return 1;
-  return 0;
+  return rgb[0];
+}
+
+char erodeBitArray(unsigned char output_image_bit[952][119],
+                  unsigned char control_image_bit[952][119])
+{
+  char removed = 0; // basically a boolean
+  for (int x = 1; x < 951; x++)
+  {
+    for (int y = 0; y < 119; y++)
+    {
+      if (y == 0)
+      {
+        // Vi tjekker MSB til højre og LSB til venstre og da vi er helt ovre til venstre nu, så er der ikke noget til højre
+        output_image_bit[x][y] = output_image_bit[x][y+1];
+        char y = output_image_bit[x][y] & output_image_bit[x - 1][y] & output_image_bit[x + 1][y];
+        
+      }
+
+
+      
+      
+
+    }
+  }
+  return removed;
 }
 
 // Function that erodes the outer layer of cells
@@ -288,6 +322,7 @@ int main(int argc, char **argv)
   // Converting image to black and white
   printf("Converting to black and white\n");
   toBlackWhite(input_image, output_image, threshold, thresholdLower);
+  toBlackWhiteBitArray(input_image, output_image_bit, threshold);
   count = countCells(output_image, count, coords, 13);
   write_bitmap(output_image, argv[3]);
 
@@ -379,7 +414,18 @@ int main(int argc, char **argv)
   write_bitmap(output_image, argv[2]);
   cpu_time_used = (double)(end - start);
 
+  // Prints time used
   printf("Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
+
+  //print the bit array
+  for (int x = 0; x < 952; x++)
+  {
+    for (int y = 0; y < 119; y++)
+    {
+      printf("%d ", output_image_bit[x][y]);
+    }
+    printf("\n");
+  }
 
   return 0;
 }
