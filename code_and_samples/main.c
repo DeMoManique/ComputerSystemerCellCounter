@@ -77,33 +77,29 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
       }
       continue;
     }
-    int yalt = 0;
     for (int y = 0; y < 119; y++)
     {
       char value = 0;
-      for (int i = 0; i < 8; i++)
+      for (int bit = 0; bit < 8; bit++)
       {
         value = value << 1;
 
-        if (yalt == 0 || yalt == 951)
+        if ((y == 0 && bit == 0) || (bit == 7 && y == 118))
         {
           value += 1;
-          yalt++;
           continue;
         }
 
         sum = 0;
         for (int c = 0; c < BMP_CHANNELS; c++)
         { // Sums up the rgb value
-          sum += input_image[x][yalt][c];
+          sum += input_image[x][(y * 8) + bit][c];
         }
 
         if (sum >= threshold)
         { // checks with higher treshold instead of averaging values
           value += 1;
         }
-
-        yalt++;
       }
       // De to sidste bits er altid 0 fordi 950 ikke er deleligt med 8
       output_image_bit[x][y] = value;
