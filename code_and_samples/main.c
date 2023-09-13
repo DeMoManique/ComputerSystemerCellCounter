@@ -67,7 +67,7 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
                           int threshold)
 {
   int sum;
-  for (int x = 0; x <= BMP_WIDTH+1; x++)
+  for (int x = 0; x <= BMP_WIDTH + 1; x++)
   {
     if (x == 0 || x == 951)
     {
@@ -77,33 +77,29 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
       }
       continue;
     }
-    int yalt = 0;
     for (int y = 0; y < 119; y++)
     {
       char value = 0;
-      for (int i = 0; i < 8; i++)
+      for (int bit = 0; bit < 8; bit++)
       {
         value = value << 1;
 
-        if (yalt == 0 || yalt == 951)
+        if ((y == 0 && bit == 0) || (bit == 7 && y == 118))
         {
           value += 1;
-          yalt++;
           continue;
         }
 
         sum = 0;
         for (int c = 0; c < BMP_CHANNELS; c++)
         { // Sums up the rgb value
-          sum += input_image[x][y][c];
+          sum += input_image[x][(y * 8) + bit][c];
         }
 
         if (sum >= threshold)
         { // checks with higher treshold instead of averaging values
           value += 1;
         }
-
-        yalt++;
       }
       // De to sidste bits er altid 0 fordi 950 ikke er deleligt med 8
       output_image_bit[x][y] = value;
@@ -118,7 +114,7 @@ int checkPixel(unsigned char rgb[BMP_CHANNELS])
 }
 
 char erodeBitArray(unsigned char output_image_bit[952][119],
-                  unsigned char control_image_bit[952][119])
+                   unsigned char control_image_bit[952][119])
 {
   char removed = 0; // basically a boolean
   for (int x = 1; x < 951; x++)
@@ -128,15 +124,9 @@ char erodeBitArray(unsigned char output_image_bit[952][119],
       if (y == 0)
       {
         // Vi tjekker MSB til højre og LSB til venstre og da vi er helt ovre til venstre nu, så er der ikke noget til højre
-        output_image_bit[x][y] = output_image_bit[x][y+1];
+        output_image_bit[x][y] = output_image_bit[x][y + 1];
         char y = output_image_bit[x][y] & output_image_bit[x - 1][y] & output_image_bit[x + 1][y];
-        
       }
-
-
-      
-      
-
     }
   }
   return removed;
@@ -160,7 +150,8 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
     {
       if (checkPixel(control_image[x][y]))
       {
-        if(checkLightPixel(control_image[x][y])){
+        if (checkLightPixel(control_image[x][y]))
+        {
           for (int i = 0; i < 3; i++)
           {
             removed = 1;
@@ -183,8 +174,6 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
   }
   return removed;
 }
-
-
 
 int erodeFirst(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
                unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
@@ -421,7 +410,7 @@ int main(int argc, char **argv)
 
   printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
 
-  //print the bit array
+  // print the bit array
   for (int x = 0; x < 952; x++)
   {
     for (int y = 0; y < 119; y++)
