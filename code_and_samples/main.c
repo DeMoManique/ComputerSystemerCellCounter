@@ -150,6 +150,7 @@ void erodeBitArray(unsigned char output_image_bit[952][119],
                                  control_image_bit[x - 1][y] &
                                  control_image_bit[x + 1][y];
       }
+
     }
   }
 }
