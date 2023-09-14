@@ -20,6 +20,11 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image_bit[952][119];
 unsigned char control_image_bit[952][119];
 
+double otsu(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
+{
+  
+}
+
 // Function to turn image into black and white
 void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
                   unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
@@ -113,24 +118,80 @@ int checkPixel(unsigned char rgb[BMP_CHANNELS])
   return rgb[0];
 }
 
-char erodeBitArray(unsigned char output_image_bit[952][119],
+void erodeBitArray(unsigned char output_image_bit[952][119],
                    unsigned char control_image_bit[952][119])
 {
-  char removed = 0; // basically a boolean
-  for (int x = 1; x < 951; x++)
+  // basically a boolean
+  for (int x = 1; x < 952; x++)
   {
     for (int y = 0; y < 119; y++)
     {
       if (y == 0)
       {
-        // Vi tjekker MSB til højre og LSB til venstre og da vi er helt ovre til venstre nu, så er der ikke noget til højre
-        output_image_bit[x][y] = output_image_bit[x][y + 1];
-        char y = output_image_bit[x][y] & output_image_bit[x - 1][y] & output_image_bit[x + 1][y];
+        output_image_bit[x][y] = control_image_bit[x][y] &
+                                 ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
+                                 (control_image_bit[x][y] >> 1 | 0x80) &
+                                 control_image_bit[x - 1][y] &
+                                 control_image_bit[x + 1][y];
+      }
+      else if (y == 118)
+      {
+        output_image_bit[x][y] = control_image_bit[x][y] &
+                                 ((control_image_bit[x][y] << 1) | 0x01) &
+                                 (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
+                                 control_image_bit[x - 1][y] &
+                                 control_image_bit[x + 1][y];
+      }
+      else
+      {
+        output_image_bit[x][y] = control_image_bit[x][y] &
+                                 ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
+                                 (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
+                                 control_image_bit[x - 1][y] &
+                                 control_image_bit[x + 1][y];
       }
     }
   }
-  return removed;
 }
+
+int countCellsBit(unsigned char image[952][119],
+                  int count)
+{
+  char bit;
+  for (int x = 1; x < 952; x++)
+  {
+    for (int y = 0; y < 119; y++)
+    {
+      if (image[x][y])
+      {
+        bit = 7;
+        while (bit >= 0)
+        {
+          if ((image[x][y] >> bit) & 0x01)
+            if (bit == 4)
+            {
+              image[x - 3][y] & image[x + 4][y];
+            }
+            else if (bit > 4)
+            {
+              ((image[x - 3][y] >> (bit - 4)) | (image[x - 3][y - 1] << (12 - bit))) &
+                  ((image[x + 4][y] >> (bit - 4)) | (image[x + 4][y - 1] << (12 - bit)));
+            }
+            else
+            {
+              ((image[x - 3][y] << (4 - bit)) | (image[x - 3][y + 1] >> (4 + bit))) &
+                  ((image[x + 4][y] << (4 - bit)) | (image[x + 4][y + 1] >> (4 + bit)));
+            }
+
+          bit--;
+        }
+      }
+    }
+  }
+
+  return count;
+}
+
 int checkLightPixel(unsigned char rgb[BMP_CHANNELS])
 {
   if (rgb[0] == 150)
@@ -313,6 +374,7 @@ int main(int argc, char **argv)
 
   // Load image from file
   read_bitmap(argv[1], input_image);
+  printf("%f", otsu(input_image));
 
   // Converting image to black and white
   toBlackWhite(input_image, output_image, threshold, thresholdLower);
@@ -415,9 +477,9 @@ int main(int argc, char **argv)
   {
     for (int y = 0; y < 119; y++)
     {
-      printf("%d ", output_image_bit[x][y]);
+  //    printf("%d ", output_image_bit[x][y]);
     }
-    printf("\n");
+    //printf("\n");
   }
 
   return 0;
