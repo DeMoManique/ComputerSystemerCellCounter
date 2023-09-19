@@ -22,7 +22,6 @@ unsigned char control_image_bit[952][119];
 
 double otsu(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
-  
 }
 
 // Function to turn image into black and white
@@ -87,6 +86,7 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
       char value = 0;
       for (int bit = 0; bit < 8; bit++)
       {
+        // bit shifting value 1 to the left
         value = value << 1;
 
         if ((y == 0 && bit == 0) || (bit == 7 && y == 118))
@@ -150,7 +150,6 @@ void erodeBitArray(unsigned char output_image_bit[952][119],
                                  control_image_bit[x - 1][y] &
                                  control_image_bit[x + 1][y];
       }
-
     }
   }
 }
@@ -163,15 +162,17 @@ int countCellsBit(unsigned char image[952][119],
   {
     for (int y = 0; y < 119; y++)
     {
+      // checks if one of the 8 bits is true
       if (image[x][y])
       {
         bit = 7;
         while (bit >= 0)
         {
+          // finds the first true bit, from left to right
           if ((image[x][y] >> bit) & 0x01)
             if (bit == 4)
             {
-              image[x - 3][y] & image[x + 4][y];
+              (image[x - 3][y] & image[x + 4][y]) & checkTheXAksis(image, x, y);
             }
             else if (bit > 4)
             {
@@ -191,6 +192,43 @@ int countCellsBit(unsigned char image[952][119],
   }
 
   return count;
+}
+
+// Function to check if the pixels on x aksis is white
+char checkTheXAksis(unsigned char image[952][119], int x, int y)
+{
+  char flyt = 0;
+  int start = 0;
+
+  // if the cell is to close to the edge
+  // left
+  if (x < 4)
+  {
+    start = 1;
+    flyt = x + 4;
+  }
+  // right
+  else if (x > 946)
+  {
+    start = 950;
+    flyt = (950 - x) + 4;
+  }
+  // middle
+  else
+  {
+    start = x - 3;
+    flyt = 8;
+  }
+
+  // checks if 8 pixels on a row is white
+  for (int i = 0; i < flyt; i++)
+  {
+    if (image[start][y])
+    {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 int checkLightPixel(unsigned char rgb[BMP_CHANNELS])
@@ -478,9 +516,9 @@ int main(int argc, char **argv)
   {
     for (int y = 0; y < 119; y++)
     {
-  //    printf("%d ", output_image_bit[x][y]);
+      //    printf("%d ", output_image_bit[x][y]);
     }
-    //printf("\n");
+    // printf("\n");
   }
 
   return 0;
