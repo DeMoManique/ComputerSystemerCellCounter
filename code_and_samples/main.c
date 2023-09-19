@@ -24,47 +24,6 @@ double otsu(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
 }
 
-// Function to turn image into black and white
-void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-                  unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-                  int threshold,
-                  int thresholdLower)
-{
-  int sum;
-  for (int x = 0; x < BMP_WIDTH; x++)
-  {
-    for (int y = 0; y < BMP_HEIGTH; y++)
-    {
-      sum = 0;
-      for (int c = 0; c < BMP_CHANNELS; c++)
-      { // Sums up the rgb value
-        sum += input_image[x][y][c];
-      }
-      if (sum >= threshold)
-      { // checks with higher treshold instead of averaging (is that a word?) values
-        for (int i = 0; i < 3; i++)
-        {
-          output_image[x][y][i] = 255;
-        }
-      }
-      else if (sum >= thresholdLower)
-      {
-        for (int i = 0; i < 3; i++)
-        {
-          output_image[x][y][i] = 150;
-        }
-      }
-      else
-      {
-        for (int i = 0; i < 3; i++)
-        {
-          output_image[x][y][i] = 0;
-        }
-      }
-    }
-  }
-}
-
 // Function to turn image into black and white bit array with a true bit all around the image so it is 952x119
 void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
                           unsigned char output_image_bit[952][119],
@@ -112,10 +71,8 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
   }
 }
 
-// Function to check if pixel is black or white (is not needed but looks pretty)
-int checkPixel(unsigned char rgb[BMP_CHANNELS])
-{
-  return rgb[0];
+void bitArrayToPicture(){
+  
 }
 
 void erodeBitArray(unsigned char output_image_bit[952][119],
