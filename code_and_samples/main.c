@@ -84,9 +84,11 @@ char erodeBitArray(unsigned char output_image_bit[952][119],
   {
     for (int y = 0; y < 119; y++)
     {
-      if (control_image[x][y])
+      if (control_image_bit[x][y])
       {
-        boolean = 1;
+        if(y!=0 && y <118){
+          boolean = 1;
+        }
         if (y == 0)
         {
           output_image_bit[x][y] = control_image_bit[x][y] &
@@ -268,118 +270,169 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
   }
   return 0;
 }
+
+int countCellsBit(unsigned char image[952][119],
+                  int count)
+{
+  char bit;
+  for (int x = 1; x < 952; x++)
+  {
+    for (int y = 0; y < 119; y++)
+    {
+      // checks if one of the 8 bits is true
+      if (image[x][y])
+      {
+        bit = 7;
+        while (bit >= 0)
+        {
+          // finds the first true bit, from left to right
+          if ((image[x][y] >> bit) & 0x01)
+            if (bit == 4)
+            {
+              if (((x > 3) && image[x - 3][y] || (x <= 947) && image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80))
+              {
+              }
+              else
+              {
+                count++;
+                for (int i = -3; i <= 4; i++)
+                {
+                  image[x + i][y] = 0;
+                }
+              }
+            }
+            else if (bit > 4)
+            {
+              if (((x > 3) && ((image[x - 3][y] >> (bit - 4)) || (image[x - 3][y - 1] << (12 - bit)))) ||
+                  ((x <= 947) && ((image[x + 4][y] >> (bit - 4)) || (image[x + 4][y - 1] << (12 - bit)))) ||
+                  checkTheXAksis(image, x, y, 0x80))
+              {
+              }
+              else
+              {
+                count++;
+                for (int i = -3; i <= 4; i++)
+                { // TODO lav noget ordentligt
+                  image[x + i][y] = 0;
+                  image[x + i][y - 1] = 0;
+                }
+              }
+            }
+            else
+            {
+              if (((x > 3) && ((image[x - 3][y] << (4 - bit)) || (image[x - 3][y + 1] >> (4 + bit)))) ||
+                  ((x <= 947) && ((image[x + 4][y] << (4 - bit)) || (image[x + 4][y + 1] >> (4 + bit)))) ||
+                  checkTheXAksis(image, x, y, 0x80))
+              {
+              }
+              else
+              {
+                count++;
+                for (int i = -3; i <= 4; i++)
+                { // TODO lav noget ordentligt
+                  image[x + i][y] = 0;
+                  image[x + i][y + 1] = 0;
+                }
+              }
+            }
+
+          bit--;
+        }
+      }
+    }
+  }
+  return count;
+}
+
+
 // Main function
 int main(int argc, char **argv)
 {
-  // cross paarameters
-  int crossLength = 7;
-  int crossWidth = 1;
-
   // analysis parameters
-  int threshold = 330;
-  int thresholdLower = 245;
-  int searchRadius = 7;
+  int threshold = 270;
 
   // needed variables
   int unsigned count = 0;
   int coords[950][2];
 
   // Load image from file
+  printf("Reading image \n");
   read_bitmap(argv[1], input_image);
-  printf("%f", otsu(input_image));
 
   // Converting image to black and white
-  toBlackWhite(input_image, output_image, threshold, thresholdLower);
+  printf("Converting image\n");
   toBlackWhiteBitArray(input_image, output_image_bit, threshold);
-  count = countCells(output_image, count, coords, 13);
-  write_bitmap(output_image, argv[3]);
+  // write_bitmap(output_image, argv[3]);
 
   // copies the modified image to control image
-  for (int x = 0; x < BMP_WIDTH; x++)
+  printf("Copying Image\n");
+  for (int x = 0; x < 952; x++)
   {
-    for (int y = 0; y < BMP_HEIGTH; y++)
+    for (int y = 0; y < 119; y++)
     {
-      for (int i = 0; i < 3; i++)
-      {
-        control_image[x][y][i] = output_image[x][y][i];
-      }
+      control_image_bit[x][y] = output_image_bit[x][y];
     }
   }
 
   start = clock();
-  while (erodeFirst(control_image, output_image))
-  { // while something was eroded
-    count = countCells(output_image, count, coords, searchRadius);
-    for (int x = 0; x < BMP_WIDTH; x++)
-    { // copies the modified image to control image
-      for (int y = 0; y < BMP_HEIGTH; y++)
+  printf("Eroding image\n");
+  while (erodeBitArray(output_image_bit, control_image_bit))
+  {
+    printf("Counting %d\n",count);
+    count = countCellsBit(output_image_bit, count);
+    for (int x = 0; x < 952; x++)
+    {
+      for (int y = 0; y < 119; y++)
       {
-        for (int i = 0; i < 3; i++)
-        {
-          control_image[x][y][i] = output_image[x][y][i];
-        }
+        control_image_bit[x][y] = output_image_bit[x][y];
       }
     }
   }
-
-  while (erode(control_image, output_image))
-  { // while something was eroded
-    count = countCells(output_image, count, coords, searchRadius);
-    for (int x = 0; x < BMP_WIDTH; x++)
-    { // copies the modified image to control image
-      for (int y = 0; y < BMP_HEIGTH; y++)
-      {
-        for (int i = 0; i < 3; i++)
-        {
-          control_image[x][y][i] = output_image[x][y][i];
-        }
-      }
-    }
-  }
+  printf("Done Eroding \n");
   end = clock();
 
   printf("final count %d", count);
 
-  for (int x = 0; x < BMP_WIDTH; x++)
-  { // sets output_image to be the input_image
-    for (int y = 0; y < BMP_HEIGTH; y++)
-    {
-      for (int i = 0; i < 3; i++)
-      {
-        output_image[x][y][i] = input_image[x][y][i];
-      }
-    }
-  }
-  // paints the cross
-  for (int i = 0; i < count; i++)
-  {
-    for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++)
-    {
-      for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++)
-      {
-        if (a >= 0 && a < BMP_WIDTH && b >= 0 && b < BMP_HEIGTH)
-        {
-          output_image[a][b][0] = 255;
-          output_image[a][b][1] = 0;
-          output_image[a][b][2] = 0;
-        }
-      }
-    }
-    for (int b = coords[i][1] - crossLength; b <= coords[i][1] + crossLength; b++)
-    {
-      for (int a = coords[i][0] - crossWidth; a <= coords[i][0] + crossWidth; a++)
-      {
-        if (b >= 0 && b < BMP_HEIGTH && a >= 0 && a < BMP_WIDTH)
-        {
-          output_image[a][b][0] = 255;
-          output_image[a][b][1] = 0;
-          output_image[a][b][2] = 0;
-        }
-      }
-    }
-  }
+  // for (int x = 0; x < BMP_WIDTH; x++)
+  //{ // sets output_image to be the input_image
+  //   for (int y = 0; y < BMP_HEIGTH; y++)
+  //   {
+  //     for (int i = 0; i < 3; i++)
+  //     {
+  //       output_image[x][y][i] = input_image[x][y][i];
+  //     }
+  //   }
+  // }
+  //  paints the cross
+  // for (int i = 0; i < count; i++)
+  //{
+  //   for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++)
+  //   {
+  //     for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++)
+  //     {
+  //       if (a >= 0 && a < BMP_WIDTH && b >= 0 && b < BMP_HEIGTH)
+  //       {
+  //         output_image[a][b][0] = 255;
+  //         output_image[a][b][1] = 0;
+  //         output_image[a][b][2] = 0;
+  //       }
+  //     }
+  //   }
+  //   for (int b = coords[i][1] - crossLength; b <= coords[i][1] + crossLength; b++)
+  //   {
+  //     for (int a = coords[i][0] - crossWidth; a <= coords[i][0] + crossWidth; a++)
+  //     {
+  //       if (b >= 0 && b < BMP_HEIGTH && a >= 0 && a < BMP_WIDTH)
+  //       {
+  //         output_image[a][b][0] = 255;
+  //         output_image[a][b][1] = 0;
+  //         output_image[a][b][2] = 0;
+  //       }
+  //     }
+  //   }
+  // }
 
-  write_bitmap(output_image, argv[2]);
+  // write_bitmap(output_image, argv[2]);
   cpu_time_used = (double)(end - start);
 
   printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
