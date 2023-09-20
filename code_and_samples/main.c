@@ -133,9 +133,19 @@ int countCellsBit(unsigned char image[952][119],
         {
           // finds the first true bit, from left to right
           if ((image[x][y] >> bit) & 0x01)
+          {
+            if (y == 0 && bit > 3)
+            {
+              ((x > 3) && ((image[x - 3][y] & 0x7F) >> (bit - 4)) || (x <= 946) && ((image[x + 4][y] & 0x7F) >> (bit - 4)) || checkTheXAksis(image, x, y, bit))
+            }
+            else if (y == 118 && bit < 5)
+            {
+              ((x > 3) && ((image[x - 3][y] & 0xFE) << (4 - bit)) || (x <= 946) && ((image[x + 4][y] & 0xFE) << (4 - bit)) || checkTheXAksis(image, x, y, bit))
+            }
+
             if (bit == 4)
             {
-              if (((x > 3) && image[x - 3][y] || (x <= 947) && image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80))
+              if (((x > 3) && image[x - 3][y] || (x <= 946) && image[x + 4][y]) || checkTheXAksis(image, x, y, 0x10))
               {
               }
               else
@@ -143,14 +153,14 @@ int countCellsBit(unsigned char image[952][119],
                 count++;
                 for (int i = -3; i <= 4; i++)
                 {
-                  image[x+i][y] = 0;
+                  image[x + i][y] = 0;
                 }
               }
             }
             else if (bit > 4)
             {
-              if (((x > 3) && ((image[x - 3][y] >> (bit - 4)) || (image[x - 3][y - 1] << (12 - bit)))) ||
-                  ((x <= 947) && ((image[x + 4][y] >> (bit - 4)) || (image[x + 4][y - 1] << (12 - bit)))) ||
+              if (((x > 3) && ((image[x - 3][y] >> (bit - 4)) || (y > 0) && (image[x - 3][y - 1] << (12 - bit)))) ||
+                  ((x <= 946) && ((image[x + 4][y] >> (bit - 4)) || (y > 0) && (image[x + 4][y - 1] << (12 - bit)))) ||
                   checkTheXAksis(image, x, y, 0x80))
               {
               }
@@ -161,8 +171,8 @@ int countCellsBit(unsigned char image[952][119],
             }
             else
             {
-              if (((x > 3) && ((image[x - 3][y] << (4 - bit)) || (image[x - 3][y + 1] >> (4 + bit)))) ||
-                  ((x <= 947) && ((image[x + 4][y] << (4 - bit)) || (image[x + 4][y + 1] >> (4 + bit)))) ||
+              if (((x > 3) && ((image[x - 3][y] << (4 - bit)) || (y < 118) && (image[x - 3][y + 1] >> (4 + bit)))) ||
+                  ((x <= 946) && ((image[x + 4][y] << (4 - bit)) || (y < 118) && (image[x + 4][y + 1] >> (4 + bit)))) ||
                   checkTheXAksis(image, x, y, 0x80))
               {
               }
@@ -171,7 +181,7 @@ int countCellsBit(unsigned char image[952][119],
                 count++;
               }
             }
-
+          }
           bit--;
         }
       }
@@ -220,7 +230,7 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
     bitend = 0x01 << bit - 4;
   }
   // bottom
-  else if (y == 119 && bit < 4)
+  else if (y == 118 && bit < 4)
   {
     bitstart = 0x01 << bit + 3;
     bitend = 0x02;
@@ -247,7 +257,7 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
     {
       return (image[start + i][yend] & bitend);
     }
-    else if (y == 119 && bit < 4)
+    else if (y == 118 && bit < 4)
     {
       return ((image[start + i][y] & bitstart));
     }
