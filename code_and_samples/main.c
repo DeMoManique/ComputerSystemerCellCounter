@@ -129,8 +129,8 @@ int countCellsBit(unsigned char image[952][119],
           if ((image[x][y] >> bit) & 0x01)
             if (bit == 4)
             {
-              if ((image[x - 3][y] || image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80)){
-
+              if ((image[x - 3][y] || image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80))
+              {
               }
             }
             else if (bit > 4)
@@ -190,7 +190,6 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
   if (y == 0 && bit > 4)
   {
     bitstart = 0x40;
-    //
     bitend = 0x01 << bit - 4;
   }
   // bottom
@@ -198,24 +197,26 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
   {
     bitstart = 0x01 << bit + 3;
     bitend = 0x02;
-  } 
+  }
   // middle
   else
   {
     bitstart = 0x01 << ((bit + 3) % 8);
     bitend = 0x01 << ((bit - 4) % 8);
-    if (bit > bitstart) {
-      y-1;
-    } 
-    if (bit < bitend) {
-      y+1;
+    if (bit > bitstart)
+    {
+      y - 1;
+    }
+    if (bit < bitend)
+    {
+      y + 1;
     }
   }
 
   // checks if 8 pixels on a row is white, both top and bottom
   for (int i = 0; i < flyt; i++)
   {
-    if ((image[start + i][y] & bitstart) | (image[start + i][yend] & bitend))
+    if ((!(y == 0 && bit > 4) && (image[start + i][y] & bitstart)) | (!(y == 119 && bit < 4) && (image[start + i][yend] & bitend)))
     {
       return 1;
     }
