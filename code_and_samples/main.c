@@ -129,16 +129,18 @@ int countCellsBit(unsigned char image[952][119],
           if ((image[x][y] >> bit) & 0x01)
             if (bit == 4)
             {
-              (image[x - 3][y] & image[x + 4][y]) & checkTheXAksis(image, x, y, 0x80);
+              if ((image[x - 3][y] || image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80)){
+
+              }
             }
             else if (bit > 4)
             {
-              ((image[x - 3][y] >> (bit - 4)) | (image[x - 3][y - 1] << (12 - bit))) &
+              ((image[x - 3][y] >> (bit - 4)) | (image[x - 3][y - 1] << (12 - bit))) |
                   ((image[x + 4][y] >> (bit - 4)) | (image[x + 4][y - 1] << (12 - bit)));
             }
             else
             {
-              ((image[x - 3][y] << (4 - bit)) | (image[x - 3][y + 1] >> (4 + bit))) &
+              ((image[x - 3][y] << (4 - bit)) | (image[x - 3][y + 1] >> (4 + bit))) |
                   ((image[x + 4][y] << (4 - bit)) | (image[x + 4][y + 1] >> (4 + bit)));
             }
 
