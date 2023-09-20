@@ -216,9 +216,17 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
   // checks if 8 pixels on a row is white, both top and bottom
   for (int i = 0; i < flyt; i++)
   {
-    if ((!(y == 0 && bit > 4) && (image[start + i][y] & bitstart)) | (!(y == 119 && bit < 4) && (image[start + i][yend] & bitend)))
+    if (y == 0 && bit > 4)
     {
-      return 1;
+      return (image[start + i][yend] & bitend);
+    }
+    else if (y == 119 && bit < 4)
+    {
+      return ((image[start + i][y] & bitstart));
+    }
+    else
+    {
+      return ((image[start + i][y] & bitstart)) | (image[start + i][yend] & bitend);
     }
   }
   return 0;
