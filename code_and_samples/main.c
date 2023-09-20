@@ -71,8 +71,8 @@ void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_C
   }
 }
 
-void bitArrayToPicture(){
-  
+void bitArrayToPicture()
+{
 }
 
 void erodeBitArray(unsigned char output_image_bit[952][119],
@@ -129,7 +129,7 @@ int countCellsBit(unsigned char image[952][119],
           if ((image[x][y] >> bit) & 0x01)
             if (bit == 4)
             {
-              (image[x - 3][y] & image[x + 4][y]) & checkTheXAksis(image, x, y);
+              (image[x - 3][y] & image[x + 4][y]) & checkTheXAksis(image, x, y, 0x80);
             }
             else if (bit > 4)
             {
@@ -152,10 +152,13 @@ int countCellsBit(unsigned char image[952][119],
 }
 
 // Function to check if the pixels on x aksis is white
-char checkTheXAksis(unsigned char image[952][119], int x, int y)
+char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
 {
   char flyt = 0;
   int start = 0;
+  char bitstart = 0;
+  char bitend = 0;
+  char yend = y;
 
   // if the cell is to close to the edge
   // left
@@ -177,10 +180,40 @@ char checkTheXAksis(unsigned char image[952][119], int x, int y)
     flyt = 8;
   }
 
+  // bit number
+  // 7 6 5 4 3 2 1 0
+
+  // if the cell is close to the edge
+  // top
+  if (y == 0 && bit > 4)
+  {
+    bitstart = 0x40;
+    //
+    bitend = 0x01 << bit - 4;
+  }
+  // bottom
+  else if (y == 119 && bit < 4)
+  {
+    bitstart = 0x01 << bit + 3;
+    bitend = 0x02;
+  } 
+  // middle
+  else
+  {
+    bitstart = 0x01 << ((bit + 3) % 8);
+    bitend = 0x01 << ((bit - 4) % 8);
+    if (bit > bitstart) {
+      y-1;
+    } 
+    if (bit < bitend) {
+      y+1;
+    }
+  }
+
   // checks if 8 pixels on a row is white
   for (int i = 0; i < flyt; i++)
   {
-    if (image[start][y])
+    if (image[start + i][y] & bitstart | image[start + i][yend] & bitend)
     {
       return 1;
     }
