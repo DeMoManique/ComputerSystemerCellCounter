@@ -75,40 +75,46 @@ void bitArrayToPicture()
 {
 }
 
-void erodeBitArray(unsigned char output_image_bit[952][119],
+char erodeBitArray(unsigned char output_image_bit[952][119],
                    unsigned char control_image_bit[952][119])
 {
+  int boolean = 0;
   // basically a boolean
   for (int x = 1; x < 952; x++)
   {
     for (int y = 0; y < 119; y++)
     {
-      if (y == 0)
+      if (control_image[x][y])
       {
-        output_image_bit[x][y] = control_image_bit[x][y] &
-                                 ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
-                                 (control_image_bit[x][y] >> 1 | 0x80) &
-                                 control_image_bit[x - 1][y] &
-                                 control_image_bit[x + 1][y];
-      }
-      else if (y == 118)
-      {
-        output_image_bit[x][y] = control_image_bit[x][y] &
-                                 ((control_image_bit[x][y] << 1) | 0x01) &
-                                 (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
-                                 control_image_bit[x - 1][y] &
-                                 control_image_bit[x + 1][y];
-      }
-      else
-      {
-        output_image_bit[x][y] = control_image_bit[x][y] &
-                                 ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
-                                 (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
-                                 control_image_bit[x - 1][y] &
-                                 control_image_bit[x + 1][y];
+        boolean = 1;
+        if (y == 0)
+        {
+          output_image_bit[x][y] = control_image_bit[x][y] &
+                                   ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
+                                   (control_image_bit[x][y] >> 1 | 0x80) &
+                                   control_image_bit[x - 1][y] &
+                                   control_image_bit[x + 1][y];
+        }
+        else if (y == 118)
+        {
+          output_image_bit[x][y] = control_image_bit[x][y] &
+                                   ((control_image_bit[x][y] << 1) | 0x01) &
+                                   (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
+                                   control_image_bit[x - 1][y] &
+                                   control_image_bit[x + 1][y];
+        }
+        else
+        {
+          output_image_bit[x][y] = control_image_bit[x][y] &
+                                   ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
+                                   (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
+                                   control_image_bit[x - 1][y] &
+                                   control_image_bit[x + 1][y];
+        }
       }
     }
   }
+  return boolean;
 }
 
 int countCellsBit(unsigned char image[952][119],
@@ -129,19 +135,41 @@ int countCellsBit(unsigned char image[952][119],
           if ((image[x][y] >> bit) & 0x01)
             if (bit == 4)
             {
-              if ((image[x - 3][y] || image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80))
+              if (((x > 3) && image[x - 3][y] || (x <= 947) && image[x + 4][y]) || checkTheXAksis(image, x, y, 0x80))
               {
+              }
+              else
+              {
+                count++;
+                for (int i = -3; i <= 4; i++)
+                {
+                  image[x+i][y] = 0;
+                }
               }
             }
             else if (bit > 4)
             {
-              ((image[x - 3][y] >> (bit - 4)) | (image[x - 3][y - 1] << (12 - bit))) |
-                  ((image[x + 4][y] >> (bit - 4)) | (image[x + 4][y - 1] << (12 - bit)));
+              if (((x > 3) && ((image[x - 3][y] >> (bit - 4)) || (image[x - 3][y - 1] << (12 - bit)))) ||
+                  ((x <= 947) && ((image[x + 4][y] >> (bit - 4)) || (image[x + 4][y - 1] << (12 - bit)))) ||
+                  checkTheXAksis(image, x, y, 0x80))
+              {
+              }
+              else
+              {
+                count++;
+              }
             }
             else
             {
-              ((image[x - 3][y] << (4 - bit)) | (image[x - 3][y + 1] >> (4 + bit))) |
-                  ((image[x + 4][y] << (4 - bit)) | (image[x + 4][y + 1] >> (4 + bit)));
+              if (((x > 3) && ((image[x - 3][y] << (4 - bit)) || (image[x - 3][y + 1] >> (4 + bit)))) ||
+                  ((x <= 947) && ((image[x + 4][y] << (4 - bit)) || (image[x + 4][y + 1] >> (4 + bit)))) ||
+                  checkTheXAksis(image, x, y, 0x80))
+              {
+              }
+              else
+              {
+                count++;
+              }
             }
 
           bit--;
@@ -149,7 +177,6 @@ int countCellsBit(unsigned char image[952][119],
       }
     }
   }
-
   return count;
 }
 
