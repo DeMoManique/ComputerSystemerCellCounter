@@ -60,46 +60,6 @@ void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
   }
 }
 
-void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-                          unsigned char output_image_bit[BMP_WIDTH][119],
-                          int threshold)
-{
-  int sum;
-  for (int x = 0; x < BMP_WIDTH; x++)
-  {
-    int yalt = 0; 
-    for (int y = 0; y < 119; y++)
-    {
-      char value = 0;
-      for (int i = 0; i < 8; i++)
-      {
-        if (yalt >= 950)
-        {
-          for (i; i < 8; i++)
-          {
-            value << 1;
-          }
-          break;
-        }
-        sum = 0;
-        for (int c = 0; c < BMP_CHANNELS; c++)
-        { // Sums up the rgb value
-          sum += input_image[x][y][c];
-        }
-
-        value << 1;
-        if (sum >= threshold)
-        { // checks with higher treshold instead of averaging values
-          value += 1;
-        }
-
-        yalt++;
-      }
-      output_image_bit[x][y] = value;
-    }
-  }
-}
-
 // Function to check if pixel is black or white (is not needed but looks pretty)
 int checkPixel(unsigned char rgb[BMP_CHANNELS])
 {
@@ -126,7 +86,8 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
     {
       if (checkPixel(control_image[x][y]))
       {
-        if(checkLightPixel(control_image[x][y])){
+        if (checkLightPixel(control_image[x][y]))
+        {
           for (int i = 0; i < 3; i++)
           {
             removed = 1;
@@ -149,8 +110,6 @@ int erode(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
   }
   return removed;
 }
-
-
 
 int erodeFirst(unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
                unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
@@ -272,29 +231,14 @@ int countCells(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
   return count;
 }
 
-// Main function
-int main(int argc, char **argv)
+void function(char *image, char *out, unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
+              int count, int coords[950][2], int threshold, int thresholdLower, int searchRadius, int crossLength, int crossWidth)
 {
-  // cross paarameters
-  int crossLength = 7;
-  int crossWidth = 1;
+  read_bitmap(image, input_image);
 
-  // analysis parameters
-  int threshold = 330;
-  int thresholdLower = 245;
-  int searchRadius = 7;
-
-  // needed variables
-  int unsigned count = 0;
-  int coords[950][2];
-
-  // Load image from file
-  read_bitmap(argv[1], input_image);
-
-  // Converting image to black and white
+  count = 0;
   toBlackWhite(input_image, output_image, threshold, thresholdLower);
   count = countCells(output_image, count, coords, 13);
-  write_bitmap(output_image, argv[3]);
 
   // copies the modified image to control image
   for (int x = 0; x < BMP_WIDTH; x++)
@@ -308,7 +252,6 @@ int main(int argc, char **argv)
     }
   }
 
-  start = clock();
   while (erodeFirst(control_image, output_image))
   { // while something was eroded
     count = countCells(output_image, count, coords, searchRadius);
@@ -338,9 +281,8 @@ int main(int argc, char **argv)
       }
     }
   }
-  end = clock();
 
-  printf("final count %d", count);
+  printf("final count %d\n", count);
 
   for (int x = 0; x < BMP_WIDTH; x++)
   { // sets output_image to be the input_image
@@ -355,6 +297,7 @@ int main(int argc, char **argv)
   // paints the cross
   for (int i = 0; i < count; i++)
   {
+    printf("%d :(%d;%d)\n", i, coords[i][0], coords[i][1]);
     for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++)
     {
       for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++)
@@ -381,7 +324,31 @@ int main(int argc, char **argv)
     }
   }
 
-  write_bitmap(output_image, argv[2]);
+  write_bitmap(output_image, out);
+}
+
+// Main function
+int main(int argc, char **argv)
+{
+  // cross paarameters
+  int crossLength = 7;
+  int crossWidth = 1;
+
+  // analysis parameters
+  int threshold = 330;
+  int thresholdLower = 245;
+  int searchRadius = 7;
+
+  // needed variables
+  int unsigned count = 0;
+  int coords[950][2];
+
+  start = clock();
+  for(int i = 0; i < 100; i ++){
+    function(argv[1], argv[2], input_image, count, coords, threshold, thresholdLower, searchRadius, crossLength, crossWidth);
+  }
+  end = clock();
+
   cpu_time_used = (double)(end - start);
 
   printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
