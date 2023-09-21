@@ -86,7 +86,8 @@ char erodeBitArray(unsigned char output_image_bit[952][119],
     {
       if (control_image_bit[x][y])
       {
-        if(y!=0 && y <118){
+        if (y != 0 && y < 118)
+        {
           boolean = 1;
         }
         if (y == 0)
@@ -136,16 +137,22 @@ int countCellsBit(unsigned char image[952][119],
           // finds the first true bit, from left to right
           if ((image[x][y] >> bit) & 0x01)
           {
-            if (y == 0 && bit > 3)
+            // If it is to close to the top
+            if ((y == 0 && bit > 3) && 
+                (((x > 3) && ((image[x - 3][y] & 0x7F) >> (bit - 4))) || 
+                ((x <= 946) && ((image[x + 4][y] & 0x7F) >> (bit - 4))) || 
+                checkTheXAksis(image, x, y, bit)))
             {
-              ((x > 3) && ((image[x - 3][y] & 0x7F) >> (bit - 4)) || (x <= 946) && ((image[x + 4][y] & 0x7F) >> (bit - 4)) || checkTheXAksis(image, x, y, bit))
             }
-            else if (y == 118 && bit < 5)
+            // If it is to close to the bottom
+            else if ((y == 118 && bit < 5) && 
+                (((x > 3) && ((image[x - 3][y] & 0xFE) << (4 - bit))) || 
+                ((x <= 946) && ((image[x + 4][y] & 0xFE) << (4 - bit))) || 
+                checkTheXAksis(image, x, y, bit)))
             {
-              ((x > 3) && ((image[x - 3][y] & 0xFE) << (4 - bit)) || (x <= 946) && ((image[x + 4][y] & 0xFE) << (4 - bit)) || checkTheXAksis(image, x, y, bit))
             }
-
-            if (bit == 4)
+            // in the middle of the char
+            else if (bit == 4)
             {
               if (((x > 3) && image[x - 3][y] || (x <= 946) && image[x + 4][y]) || checkTheXAksis(image, x, y, 0x10))
               {
@@ -161,8 +168,8 @@ int countCellsBit(unsigned char image[952][119],
             }
             else if (bit > 4)
             {
-              if (((x > 3) && ((image[x - 3][y] >> (bit - 4)) || (y > 0) && (image[x - 3][y - 1] << (12 - bit)))) ||
-                  ((x <= 946) && ((image[x + 4][y] >> (bit - 4)) || (y > 0) && (image[x + 4][y - 1] << (12 - bit)))) ||
+              if (((x > 3) && ((image[x - 3][y] >> (bit - 4)) || (image[x - 3][y - 1] << (12 - bit)))) ||
+                  ((x <= 946) && ((image[x + 4][y] >> (bit - 4)) || (image[x + 4][y - 1] << (12 - bit)))) ||
                   checkTheXAksis(image, x, y, 0x80))
               {
               }
@@ -173,8 +180,8 @@ int countCellsBit(unsigned char image[952][119],
             }
             else
             {
-              if (((x > 3) && ((image[x - 3][y] << (4 - bit)) || (y < 118) && (image[x - 3][y + 1] >> (4 + bit)))) ||
-                  ((x <= 946) && ((image[x + 4][y] << (4 - bit)) || (y < 118) && (image[x + 4][y + 1] >> (4 + bit)))) ||
+              if (((x > 3) && ((image[x - 3][y] << (4 - bit)) || (image[x - 3][y + 1] >> (4 + bit)))) ||
+                  ((x <= 946) && ((image[x + 4][y] << (4 - bit)) || (image[x + 4][y + 1] >> (4 + bit)))) ||
                   checkTheXAksis(image, x, y, 0x80))
               {
               }
@@ -344,7 +351,6 @@ int countCellsBit(unsigned char image[952][119],
   return count;
 }
 
-
 // Main function
 int main(int argc, char **argv)
 {
@@ -378,7 +384,7 @@ int main(int argc, char **argv)
   printf("Eroding image\n");
   while (erodeBitArray(output_image_bit, control_image_bit))
   {
-    printf("Counting %d\n",count);
+    printf("Counting %d\n", count);
     count = countCellsBit(output_image_bit, count);
     for (int x = 0; x < 952; x++)
     {
