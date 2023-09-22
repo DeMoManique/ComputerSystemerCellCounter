@@ -62,11 +62,26 @@ unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANN
 }
 
 // Convert pixels to bits
+// Function to turn image into black and white bit array with a true bit all around the image so it is 952x119
+void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
+                          unsigned char output[950][119],
+                          int threshold)
+{
+  for (int x = 0; x < BMP_WIDTH; x++)
+  {
+    for (int y = 0; y < 119; y++)
+    {
+      if(image[x][y] >= threshold){
+        output[x][y>>3] |= 1 << (y & 0x06);
+      }
+    }
+  }
+}
 
 // convert bits to pixels
-void printBits(char image[952][119], char *path){
+void printBits(char image[BMP_WIDTH][119], char *path){
     unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS] = {0};
-    for(int x = 1; x < 952; x++){
+    for(int x = 0; x < BMP_WIDTH; x++){
         for(int y = 0; y < 119; y++){
             if(image[x][y]){
                 for(int i = 0; i < 8;i++){
@@ -79,5 +94,5 @@ void printBits(char image[952][119], char *path){
             }
         }
     }
-    write_bitmap(output_image,path)
+    write_bitmap(output_image,path);
 }
