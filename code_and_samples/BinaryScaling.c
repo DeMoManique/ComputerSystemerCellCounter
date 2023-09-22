@@ -9,7 +9,7 @@ void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS] u
     {
         for (int y = 0; y < BMP_HEIGTH; y++)
         {
-            int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]) / 3;
+            int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]) / 3; //dont know if this is too complicated
             greyScaled[x][y] = (char)greyValue;
         }
     }
