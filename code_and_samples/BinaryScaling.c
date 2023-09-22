@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "cbmp.h"
 
+// GreyScaling??
+
 // Otsu
 unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
@@ -45,9 +47,9 @@ unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANN
         BackgroundIntensity += (double)(i * histogram[i]);
 
         meanBackround = BackgroundIntensity / weightBackground;
-        meanForeground = (intensity - BackgroundIntensity) / weightForeground; 
+        meanForeground = (intensity - BackgroundIntensity) / weightForeground;
 
-        variance =  ((double)weightBackground * (double)weightForeground * 
+        variance = ((double)weightBackground * (double)weightForeground *
                     (meanBackround - meanForeground) * (meanBackround - meanForeground));
 
         if (variance > maxVariance)
@@ -62,3 +64,20 @@ unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANN
 // Convert pixels to bits
 
 // convert bits to pixels
+void printBits(char image[952][119], char *path){
+    unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS] = {0};
+    for(int x = 1; x < 952; x++){
+        for(int y = 0; y < 119; y++){
+            if(image[x][y]){
+                for(int i = 0; i < 8;i++){
+                    if((char >> (7-i)) & 0x01){
+                        output_image[x][y*8+i][0] = 255;
+                        output_image[x][y*8+i][1] = 255;
+                        output_image[x][y*8+i][2] = 255;
+                    }
+                }
+            }
+        }
+    }
+    write_bitmap(output_image,path)
+}
