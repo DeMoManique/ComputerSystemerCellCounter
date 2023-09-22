@@ -348,8 +348,8 @@ int main(int argc, char **argv)
 
 
   start = clock();
-  for(int i = 0; i < 1; i ++){
-    function(input, out, input_image, count, coords, threshold, thresholdLower, searchRadius, crossLength, crossWidth);
+  while(erode(control_image,output_image)){
+
   }
   end = clock();
 
