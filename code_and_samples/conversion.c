@@ -78,11 +78,11 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
 {
     for (int x = 0; x < BMP_WIDTH; x++)
     {
-        for (int y = 0; y < 119; y++)
+        for (int y = 0; y < BMP_WIDTH; y++)
         {
             if (image[x][y] >= threshold) //If pixel should be white
             {
-                output[x][y >> 3] |= 1 << (7-(y & 0x06));   //output[x][y/8] | (1 << (7-y%8))
+                output[x][y >> 3] |= (1 << (7-(y & 0x07)));   //output[x][y/8] | (1 << (7-y%8))
                                                         //placemnt of pixel 
             }
         }

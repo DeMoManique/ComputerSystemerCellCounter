@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "cbmp.h"
-#include "BinaryScaling.c"
+#include "conversion.c"
 #include "erode.c"
 
 // Declaring the
@@ -21,15 +21,6 @@ unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image_bit[952][119];
 unsigned char control_image_bit[952][119];
-
-
-
-
-void bitArrayToPicture()
-{
-}
-
-
 
 // Function to check if the pixels on x aksis is white
 char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
@@ -202,10 +193,32 @@ int main(int argc, char **argv)
   printf("%d \nconverting to bits\n",threshold);
   unsigned char bitImage[BMP_WIDTH][119];
   imageToBits(greyImage,bitImage,threshold);
-  printf("printing image");
-  unsigned char Oimage[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-  printBits(bitImage, Oimage);
-  write_bitmap(Oimage, argv[2]);
+  printf("printing image\n");
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[2]);
+  printf("Eroding image\n");
+  unsigned char controlImage[BMP_WIDTH][119];
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[2]);
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[3]);
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[4]);
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[5]);
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[6]);
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[7]);
+  erodeBitArray(bitImage,controlImage,1);
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[8]);
   printf("done");
   return 0;
 }
