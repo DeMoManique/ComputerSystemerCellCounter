@@ -9,6 +9,7 @@
 #include <time.h>
 #include "cbmp.h"
 #include "BinaryScaling.c"
+#include "erode.c"
 
 // Declaring the
 clock_t start, end;
@@ -21,50 +22,14 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image_bit[952][119];
 unsigned char control_image_bit[952][119];
 
-char erodeBitArray(unsigned char output_image_bit[952][119],
-                   unsigned char control_image_bit[952][119])
+
+
+
+void bitArrayToPicture()
 {
-  int boolean = 0;
-  // basically a boolean
-  for (int x = 1; x < 952; x++)
-  {
-    for (int y = 0; y < 119; y++)
-    {
-      if (control_image_bit[x][y])
-      {
-        if (y != 0 && y < 118)
-        {
-          boolean = 1;
-        }
-        if (y == 0)
-        {
-          output_image_bit[x][y] = control_image_bit[x][y] &
-                                   ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
-                                   (control_image_bit[x][y] >> 1 | 0x80) &
-                                   control_image_bit[x - 1][y] &
-                                   control_image_bit[x + 1][y];
-        }
-        else if (y == 118)
-        {
-          output_image_bit[x][y] = control_image_bit[x][y] &
-                                   ((control_image_bit[x][y] << 1) | 0x01) &
-                                   (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
-                                   control_image_bit[x - 1][y] &
-                                   control_image_bit[x + 1][y];
-        }
-        else
-        {
-          output_image_bit[x][y] = control_image_bit[x][y] &
-                                   ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
-                                   (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
-                                   control_image_bit[x - 1][y] &
-                                   control_image_bit[x + 1][y];
-        }
-      }
-    }
-  }
-  return boolean;
 }
+
+
 
 // Function to check if the pixels on x aksis is white
 char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
