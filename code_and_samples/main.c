@@ -21,56 +21,8 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image_bit[952][119];
 unsigned char control_image_bit[952][119];
 
-double otsu(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
-{
-}
 
-// Function to turn image into black and white bit array with a true bit all around the image so it is 952x119
-void toBlackWhiteBitArray(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
-                          unsigned char output_image_bit[952][119],
-                          int threshold)
-{
-  int sum;
-  for (int x = 0; x <= BMP_WIDTH + 1; x++)
-  {
-    if (x == 0 || x == 951)
-    {
-      for (int y = 0; y < 119; y++)
-      {
-        output_image_bit[x][y] = 0xFF;
-      }
-      continue;
-    }
-    for (int y = 0; y < 119; y++)
-    {
-      char value = 0;
-      for (int bit = 0; bit < 8; bit++)
-      {
-        // bit shifting value 1 to the left
-        value = value << 1;
 
-        if ((y == 0 && bit == 0) || (bit == 7 && y == 118))
-        {
-          value += 1;
-          continue;
-        }
-
-        sum = 0;
-        for (int c = 0; c < BMP_CHANNELS; c++)
-        { // Sums up the rgb value
-          sum += input_image[x][(y * 8) + bit][c];
-        }
-
-        if (sum >= threshold)
-        { // checks with higher treshold instead of averaging values
-          value += 1;
-        }
-      }
-      // De to sidste bits er altid 0 fordi 950 ikke er deleligt med 8
-      output_image_bit[x][y] = value;
-    }
-  }
-}
 
 void bitArrayToPicture()
 {
