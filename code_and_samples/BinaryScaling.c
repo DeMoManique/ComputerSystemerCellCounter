@@ -3,9 +3,17 @@
 #include "cbmp.h"
 
 // GreyScaling??
-
+void imageGreyScaling(  unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]
+                        unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH]){
+    for(int x = 0; x < BMP_WIDTH; x++){
+        for(int y = 0; y < BMP_HEIGTH; y++){
+            int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2])/3;
+            greyScaled[x][y] = (char)greyValue;
+        }
+    }
+}
 // Otsu
-unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
+unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH])
 {
     int pixels = BMP_HEIGTH * BMP_WIDTH;
     int histogram[256] = {0};
@@ -14,7 +22,7 @@ unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANN
     {
         for (int y = 0; y < BMP_HEIGTH; y++)
         {
-            histogram[(image[x][y][0] + image[x][y][1] + image[x][y][2]) / 3]++;
+            histogram[image[x][y]]++;
         }
     }
 
