@@ -37,28 +37,27 @@ char LeftNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
     if (y == 0)
     {
-        return (image[x][y] >> 1) | 0x80;
+        return ((image[x][y] >> 1) | 0x80);
     }
-    return (image[x][y] >> 1) | (image[x][y - 1] << 7);
+    return ((image[x][y] >> 1) | (image[x][y - 1] << 7));
 }
 
 char RightNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
     if (y == 118)
     {
-        return (image[x][y] << 1) | 0x01;
+        return ((image[x][y] << 1) | 0x01);
     }
-    return (image[x][y] << 1) | (image[x][y + 1] >> 7);
+    return ((image[x][y] << 1) | (image[x][y + 1] >> 7));
 }
 // Collect all neighbors in one function to help with clarity in erode function
 unsigned char erodeChar(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
-    return aboveNeighbor(image, x, y) & belowNeighbor(image, x, y) & LeftNeighbor(image, x, y) & RightNeighbor(image, x, y);
+    return ((aboveNeighbor(image, x, y) & belowNeighbor(image, x, y)) & (LeftNeighbor(image, x, y) & RightNeighbor(image, x, y)));
 }
 
 char erodeBitArray(unsigned char image[BMP_WIDTH][119],
-                   unsigned char control[BMP_WIDTH][119],
-                   char mode)
+                   unsigned char control[BMP_WIDTH][119])
 {
     copyArray(image, control);
     char boolean = 0;
@@ -67,9 +66,8 @@ char erodeBitArray(unsigned char image[BMP_WIDTH][119],
     {
         for (int y = 0; y < 119; y++)
         {
-            if (control[x][y])
-            {
-                image[x][y] = erodeChar(control, x, y);
+            if(image[x][y]){
+                image[x][y] &= erodeChar(control,x,y);
                 boolean = 1;
             }
         }

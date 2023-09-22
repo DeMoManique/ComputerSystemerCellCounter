@@ -9,7 +9,7 @@ void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
     {
         for (int y = 0; y < BMP_HEIGTH; y++)
         {
-            int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]) / 3; //dont know if this is too complicated
+            int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]) / 3; // dont know if this is too complicated
             greyScaled[x][y] = (char)greyValue;
         }
     }
@@ -80,10 +80,10 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
     {
         for (int y = 0; y < BMP_WIDTH; y++)
         {
-            if (image[x][y] >= threshold) //If pixel should be white
+            if (image[x][y] >= threshold) // If pixel should be white
             {
-                output[x][y >> 3] |= (1 << (7-(y & 0x07)));   //output[x][y/8] | (1 << (7-y%8))
-                                                        //placemnt of pixel 
+                output[x][y >> 3] |= (1 << (7 - (y & 0x07))); // output[x][y/8] | (1 << (7-y%8))
+                                                              // placemnt of pixel
             }
         }
     }
@@ -96,21 +96,19 @@ void printBits(unsigned char image[BMP_WIDTH][119], unsigned char output_image[B
     {
         for (int y = 0; y < 119; y++)
         {
-            if (image[x][y]) //if there is atleast one 1 in char
+            for (int i = 0; i < 8; i++)
             {
-                for (int i = 0; i < 8; i++)
+                if ((image[x][y] >> (7 - i)) & 0x01)
+                { // if the current bit is 1
+                    output_image[x][y * 8 + i][0] = 255;
+                    output_image[x][y * 8 + i][1] = 255;
+                    output_image[x][y * 8 + i][2] = 255;
+                }
+                else
                 {
-                    if ((image[x][y] >> (7 - i)) & 0x01) 
-                    {   //if the current bit is 1
-                        output_image[x][y * 8 + i][0] = 255;
-                        output_image[x][y * 8 + i][1] = 255;
-                        output_image[x][y * 8 + i][2] = 255;
-                    }
-                    else{
-                        output_image[x][y * 8 + i][0] = 0;
-                        output_image[x][y * 8 + i][1] = 0;
-                        output_image[x][y * 8 + i][2] = 0;
-                    }
+                    output_image[x][y * 8 + i][0] = 0;
+                    output_image[x][y * 8 + i][1] = 0;
+                    output_image[x][y * 8 + i][2] = 0;
                 }
             }
         }
