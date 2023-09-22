@@ -9,6 +9,7 @@
 #include <time.h>
 #include "cbmp.h"
 #include "BinaryScaling.c"
+#include "erode.c"
 
 // Declaring the
 clock_t start, end;
@@ -28,50 +29,7 @@ void bitArrayToPicture()
 {
 }
 
-char erodeBitArray(unsigned char output_image_bit[952][119],
-                   unsigned char control_image_bit[952][119])
-{
-  int boolean = 0;
-  // basically a boolean
-  for (int x = 1; x < 952; x++)
-  {
-    for (int y = 0; y < 119; y++)
-    {
-      if (control_image_bit[x][y])
-      {
-        if (y != 0 && y < 118)
-        {
-          boolean = 1;
-        }
-        if (y == 0)
-        {
-          output_image_bit[x][y] = control_image_bit[x][y] &
-                                   ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
-                                   (control_image_bit[x][y] >> 1 | 0x80) &
-                                   control_image_bit[x - 1][y] &
-                                   control_image_bit[x + 1][y];
-        }
-        else if (y == 118)
-        {
-          output_image_bit[x][y] = control_image_bit[x][y] &
-                                   ((control_image_bit[x][y] << 1) | 0x01) &
-                                   (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
-                                   control_image_bit[x - 1][y] &
-                                   control_image_bit[x + 1][y];
-        }
-        else
-        {
-          output_image_bit[x][y] = control_image_bit[x][y] &
-                                   ((control_image_bit[x][y] << 1) | (control_image_bit[x][y + 1] >> 7)) &
-                                   (control_image_bit[x][y] >> 1 | (control_image_bit[x][y - 1] & 0x01)) &
-                                   control_image_bit[x - 1][y] &
-                                   control_image_bit[x + 1][y];
-        }
-      }
-    }
-  }
-  return boolean;
-}
+
 
 // Function to check if the pixels on x aksis is white
 char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
@@ -233,104 +191,6 @@ int countCellsBit(unsigned char image[952][119],
 // Main function
 int main(int argc, char **argv)
 {
-  // analysis parameters
-  int threshold = 270;
-
-  // needed variables
-  int unsigned count = 0;
-  int coords[950][2];
-
-  // Load image from file
-  printf("Reading image \n");
-  read_bitmap(argv[1], input_image);
-
-  // Converting image to black and white
-  printf("Converting image\n");
-  toBlackWhiteBitArray(input_image, output_image_bit, threshold);
-  // write_bitmap(output_image, argv[3]);
-
-  // copies the modified image to control image
-  printf("Copying Image\n");
-  for (int x = 0; x < 952; x++)
-  {
-    for (int y = 0; y < 119; y++)
-    {
-      control_image_bit[x][y] = output_image_bit[x][y];
-    }
-  }
-
-  start = clock();
-  printf("Eroding image\n");
-  while (erodeBitArray(output_image_bit, control_image_bit))
-  {
-    printf("Counting %d\n", count);
-    count = countCellsBit(output_image_bit, count);
-    for (int x = 0; x < 952; x++)
-    {
-      for (int y = 0; y < 119; y++)
-      {
-        control_image_bit[x][y] = output_image_bit[x][y];
-      }
-    }
-  }
-  printf("Done Eroding \n");
-  end = clock();
-
-  printf("final count %d", count);
-
-  // for (int x = 0; x < BMP_WIDTH; x++)
-  //{ // sets output_image to be the input_image
-  //   for (int y = 0; y < BMP_HEIGTH; y++)
-  //   {
-  //     for (int i = 0; i < 3; i++)
-  //     {
-  //       output_image[x][y][i] = input_image[x][y][i];
-  //     }
-  //   }
-  // }
-  //  paints the cross
-  // for (int i = 0; i < count; i++)
-  //{
-  //   for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++)
-  //   {
-  //     for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++)
-  //     {
-  //       if (a >= 0 && a < BMP_WIDTH && b >= 0 && b < BMP_HEIGTH)
-  //       {
-  //         output_image[a][b][0] = 255;
-  //         output_image[a][b][1] = 0;
-  //         output_image[a][b][2] = 0;
-  //       }
-  //     }
-  //   }
-  //   for (int b = coords[i][1] - crossLength; b <= coords[i][1] + crossLength; b++)
-  //   {
-  //     for (int a = coords[i][0] - crossWidth; a <= coords[i][0] + crossWidth; a++)
-  //     {
-  //       if (b >= 0 && b < BMP_HEIGTH && a >= 0 && a < BMP_WIDTH)
-  //       {
-  //         output_image[a][b][0] = 255;
-  //         output_image[a][b][1] = 0;
-  //         output_image[a][b][2] = 0;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // write_bitmap(output_image, argv[2]);
-  cpu_time_used = (double)(end - start);
-
-  printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
-
-  // print the bit array
-  for (int x = 0; x < 952; x++)
-  {
-    for (int y = 0; y < 119; y++)
-    {
-      //    printf("%d ", output_image_bit[x][y]);
-    }
-    // printf("\n");
-  }
-  printf("%d",otsuThreshold(input_image));
+  char pixelBit[BMP_WIDTH][119] = imageToBits(imageGreyScaling(input_image),pixelBit,otsuThreshold(imageGreyScaling(input_image)));
   return 0;
 }
