@@ -21,13 +21,6 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image_bit[952][119];
 unsigned char control_image_bit[952][119];
 
-
-
-
-void bitArrayToPicture()
-{
-}
-
 char erodeBitArray(unsigned char output_image_bit[952][119],
                    unsigned char control_image_bit[952][119])
 {
@@ -233,104 +226,21 @@ int countCellsBit(unsigned char image[952][119],
 // Main function
 int main(int argc, char **argv)
 {
-  // analysis parameters
-  int threshold = 270;
-
-  // needed variables
-  int unsigned count = 0;
-  int coords[950][2];
-
-  // Load image from file
+  int threshold;
   printf("Reading image \n");
   read_bitmap(argv[1], input_image);
-
-  // Converting image to black and white
-  printf("Converting image\n");
-  toBlackWhiteBitArray(input_image, output_image_bit, threshold);
-  // write_bitmap(output_image, argv[3]);
-
-  // copies the modified image to control image
-  printf("Copying Image\n");
-  for (int x = 0; x < 952; x++)
-  {
-    for (int y = 0; y < 119; y++)
-    {
-      control_image_bit[x][y] = output_image_bit[x][y];
-    }
-  }
-
-  start = clock();
-  printf("Eroding image\n");
-  while (erodeBitArray(output_image_bit, control_image_bit))
-  {
-    printf("Counting %d\n", count);
-    count = countCellsBit(output_image_bit, count);
-    for (int x = 0; x < 952; x++)
-    {
-      for (int y = 0; y < 119; y++)
-      {
-        control_image_bit[x][y] = output_image_bit[x][y];
-      }
-    }
-  }
-  printf("Done Eroding \n");
-  end = clock();
-
-  printf("final count %d", count);
-
-  // for (int x = 0; x < BMP_WIDTH; x++)
-  //{ // sets output_image to be the input_image
-  //   for (int y = 0; y < BMP_HEIGTH; y++)
-  //   {
-  //     for (int i = 0; i < 3; i++)
-  //     {
-  //       output_image[x][y][i] = input_image[x][y][i];
-  //     }
-  //   }
-  // }
-  //  paints the cross
-  // for (int i = 0; i < count; i++)
-  //{
-  //   for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++)
-  //   {
-  //     for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++)
-  //     {
-  //       if (a >= 0 && a < BMP_WIDTH && b >= 0 && b < BMP_HEIGTH)
-  //       {
-  //         output_image[a][b][0] = 255;
-  //         output_image[a][b][1] = 0;
-  //         output_image[a][b][2] = 0;
-  //       }
-  //     }
-  //   }
-  //   for (int b = coords[i][1] - crossLength; b <= coords[i][1] + crossLength; b++)
-  //   {
-  //     for (int a = coords[i][0] - crossWidth; a <= coords[i][0] + crossWidth; a++)
-  //     {
-  //       if (b >= 0 && b < BMP_HEIGTH && a >= 0 && a < BMP_WIDTH)
-  //       {
-  //         output_image[a][b][0] = 255;
-  //         output_image[a][b][1] = 0;
-  //         output_image[a][b][2] = 0;
-  //       }
-  //     }
-  //   }
-  // }
-
-  // write_bitmap(output_image, argv[2]);
-  cpu_time_used = (double)(end - start);
-
-  printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
-
-  // print the bit array
-  for (int x = 0; x < 952; x++)
-  {
-    for (int y = 0; y < 119; y++)
-    {
-      //    printf("%d ", output_image_bit[x][y]);
-    }
-    // printf("\n");
-  }
-  printf("%d",otsuThreshold(input_image));
+  printf("greyscaling \n");
+  unsigned char greyImage[BMP_WIDTH][BMP_HEIGTH];
+  imageGreyScaling(input_image,greyImage);
+  printf("calculating threshold: ");
+  threshold = otsuThreshold(greyImage);
+  printf("%d \nconverting to bits\n",threshold);
+  unsigned char bitImage[BMP_WIDTH][119];
+  imageToBits(greyImage,bitImage,threshold);
+  printf("printing image");
+  unsigned char Oimage[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+  printBits(bitImage, Oimage);
+  write_bitmap(Oimage, argv[2]);
+  printf("done");
   return 0;
 }

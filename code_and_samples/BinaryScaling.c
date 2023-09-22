@@ -3,7 +3,7 @@
 #include "cbmp.h"
 
 // GreyScaling??
-void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS] unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH])
+void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH])
 {
     for (int x = 0; x < BMP_WIDTH; x++)
     {
@@ -90,9 +90,8 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
 }
 
 // convert bits to pixels
-void printBits(char image[BMP_WIDTH][119], char *path)
+void printBits(unsigned char image[BMP_WIDTH][119], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
-    unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS] = {0};
     for (int x = 0; x < BMP_WIDTH; x++)
     {
         for (int y = 0; y < 119; y++)
@@ -101,15 +100,19 @@ void printBits(char image[BMP_WIDTH][119], char *path)
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    if ((char >> (7 - i)) & 0x01) //if the current bit is 1
-                    {
+                    if ((image[x][y] >> (7 - i)) & 0x01) 
+                    {   //if the current bit is 1
                         output_image[x][y * 8 + i][0] = 255;
                         output_image[x][y * 8 + i][1] = 255;
                         output_image[x][y * 8 + i][2] = 255;
+                    }
+                    else{
+                        output_image[x][y * 8 + i][0] = 0;
+                        output_image[x][y * 8 + i][1] = 0;
+                        output_image[x][y * 8 + i][2] = 0;
                     }
                 }
             }
         }
     }
-    write_bitmap(output_image, path);
 }
