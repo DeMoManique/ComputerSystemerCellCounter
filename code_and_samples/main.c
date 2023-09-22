@@ -342,10 +342,14 @@ int main(int argc, char **argv)
   // needed variables
   int unsigned count = 0;
   int coords[950][2];
+  
+  char* input = argv[1];
+  char* out = argv[2];
+
 
   start = clock();
-  for(int i = 0; i < 100; i ++){
-    function(argv[1], argv[2], input_image, count, coords, threshold, thresholdLower, searchRadius, crossLength, crossWidth);
+  for(int i = 0; i < 1; i ++){
+    function(input, out, input_image, count, coords, threshold, thresholdLower, searchRadius, crossLength, crossWidth);
   }
   end = clock();
 
