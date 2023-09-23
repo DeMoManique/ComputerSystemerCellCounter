@@ -3,6 +3,7 @@
 
 #define BMP_WIDTH 950
 #define BMP_HEIGTH 950
+#define BIT_WIDTH 119
 #define BMP_CHANNELS 3
 
 // Public function declarations
