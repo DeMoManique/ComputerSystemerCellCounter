@@ -60,7 +60,7 @@ unsigned char erodeChar(unsigned char image[BMP_WIDTH][119], int x, int y)
     return ((aboveNeighbor(image, x, y) & belowNeighbor(image, x, y)) & (LeftNeighbor(image, x, y) & RightNeighbor(image, x, y)));
 }
 
-char erodeBitArray(unsigned char image[BMP_WIDTH][119],
+char erode(unsigned char image[BMP_WIDTH][119],
                    unsigned char control[BMP_WIDTH][119])
 {
     copyArray(image, control); //Makes control image be equal to image

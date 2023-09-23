@@ -43,11 +43,12 @@ int main(int argc, char **argv)
   printf("Eroding image\n");
   unsigned char controlImage[BMP_WIDTH][119];
   start = clock();
-  while(erodeBitArray(bitImage,controlImage)){
-
+  int iteration = 0;
+  while(erode(bitImage,controlImage)){
+    iteration++;
   }
+  printf("%d", iteration);
   end = clock();
-
   cpu_time_used = (double)(end - start);
 
   printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);

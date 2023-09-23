@@ -1,8 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "cbmp.h"
+#include "main.c"
 
-char checkTheXAksis(unsigned char image[952][119], int x, int y, char bit)
+#define crossLength 5
+#define crossWidth 1
+
+char checkTheXAksis(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
 {
   char flyt = 0;
   int start = 0;
@@ -97,17 +101,17 @@ int countCellsBit(unsigned char image[952][119],
           if ((image[x][y] >> bit) & 0x01)
           {
             // If it is to close to the top
-            if ((y == 0 && bit > 3) && 
-                (((x > 3) && ((image[x - 3][y] & 0x7F) >> (bit - 4))) || 
-                ((x <= 946) && ((image[x + 4][y] & 0x7F) >> (bit - 4))) || 
-                checkTheXAksis(image, x, y, bit)))
+            if ((y == 0 && bit > 3) &&
+                (((x > 3) && ((image[x - 3][y] & 0x7F) >> (bit - 4))) ||
+                 ((x <= 946) && ((image[x + 4][y] & 0x7F) >> (bit - 4))) ||
+                 checkTheXAksis(image, x, y, bit)))
             {
             }
             // If it is to close to the bottom
-            else if ((y == 118 && bit < 5) && 
-                (((x > 3) && ((image[x - 3][y] & 0xFE) << (4 - bit))) || 
-                ((x <= 946) && ((image[x + 4][y] & 0xFE) << (4 - bit))) || 
-                checkTheXAksis(image, x, y, bit)))
+            else if ((y == 118 && bit < 5) &&
+                     (((x > 3) && ((image[x - 3][y] & 0xFE) << (4 - bit))) ||
+                      ((x <= 946) && ((image[x + 4][y] & 0xFE) << (4 - bit))) ||
+                      checkTheXAksis(image, x, y, bit)))
             {
             }
             // in the middle of the char
@@ -156,4 +160,83 @@ int countCellsBit(unsigned char image[952][119],
     }
   }
   return count;
+}
+
+char aboveRow()
+{
+}
+char belowRow()
+{
+}
+char rightRow()
+{
+}
+char leftRow()
+{
+}
+char checkBox()
+{
+  return aboveRow() & belowRow() & rightRow() & leftRow();
+}
+void eraseCell(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
+{
+}
+int count(unsigned char image[BMP_WIDTH][119], int counter)
+{
+  for (int x = 0; x < BMP_WIDTH; x++)
+  {
+    for (int y = 0; y < 119; y++)
+    {
+      if (image[x][y])
+      {
+        for (char bit = 0; bit < 8; bit++)
+        {
+          if ((image[x][y] >> (7 - bit)) & 0x01)
+          {
+            if (!checkBox())
+            {
+              paintCross(input_image, x, y * 8 + bit);
+              counter++;
+              eraseCell(image, x, y, bit);
+              // Optimization: break if there are no more 1 bits in char
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x, int y)
+{
+  for (int xx = x - crossLength; xx <= x + crossLength; xx++)
+  {
+    if (xx >= 0 && xx < BMP_WIDTH)
+    {
+      for (int yy = y - crossWidth; yy <= y + crossWidth; yy++)
+      {
+        if (yy >= 0 && yy < BMP_HEIGTH)
+        {
+          image[xx][yy][0] = 255;
+          image[xx][yy][0] = 0;
+          image[xx][yy][0] = 0;
+        }
+      }
+    }
+  }
+  for (int yy = y - crossLength; yy <= y + crossLength; yy++)
+  {
+    if (yy >= 0 && yy < BMP_HEIGTH)
+    {
+      for (int xx = x - crossWidth; xx <= x + crossWidth; xx++)
+      {
+        if (xx >= 0 && xx < BMP_WIDTH)
+        {
+          image[xx][yy][0] = 255;
+          image[xx][yy][0] = 0;
+          image[xx][yy][0] = 0;
+        }
+      }
+    }
+  }
 }
