@@ -18,4 +18,4 @@ main.exe samples/MEDIUM/6MEDIUM.bmp samples/MEDIUM/6MEDIUMoutput.bmp samples/MED
 main.exe samples/MEDIUM/7MEDIUM.bmp samples/MEDIUM/7MEDIUMoutput.bmp samples/MEDIUM/7MEDIUMblackwhite.bmp
 main.exe samples/MEDIUM/8MEDIUM.bmp samples/MEDIUM/8MEDIUMoutput.bmp samples/MEDIUM/8MEDIUMblackwhite.bmp
 main.exe samples/MEDIUM/9MEDIUM.bmp samples/MEDIUM/9MEDIUMoutput.bmp samples/MEDIUM/9MEDIUMblackwhite.bmp
-main.exe samples/MEDIUM/10MEDIUM.bmp samples/MEDIUM/10MEDIUMoutput.bmp samples/MEDIUM/10MEDIUMblackwhite.bmp
+main.exe samples/impossible/1IMPOSSIBLE.bmp samples/impossible/1IMPOSSIBLEoutput.bmp samples/impossible/1IMPOSSIBLEblackwhite.bmp

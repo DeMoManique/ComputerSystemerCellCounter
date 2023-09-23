@@ -23,6 +23,19 @@ unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image_bit[952][119];
 unsigned char control_image_bit[952][119];
 
+void delay(int number_of_seconds)
+{
+  // Converting time into milli_seconds
+  int milli_seconds = 1000 * number_of_seconds;
+
+  // Storing start time
+  clock_t start_time = clock();
+
+  // looping till required time is not achieved
+  while (clock() < start_time + milli_seconds)
+    ;
+}
+
 // Main function
 int main(int argc, char **argv)
 {
@@ -44,19 +57,19 @@ int main(int argc, char **argv)
   unsigned char controlImage[BMP_WIDTH][119];
   start = clock();
   int counter = 0;
-  char iteration = 0;
+  printBits(bitImage, output_image);
+  write_bitmap(output_image, argv[3]);
   while (erode(bitImage, controlImage))
   {
-    counter = count(bitImage, counter);
-    if (iteration = 0)
-    {
-      printBits(bitImage, output_image);
-      write_bitmap(output_image, argv[2]);
-    }
-    iteration++;
+    
+    counter = count(bitImage, counter,input_image);
     printf("%d\n", counter);
+    delay(1);
+    printBits(bitImage, output_image);
+    write_bitmap(output_image, argv[2]);
   }
   end = clock();
+  write_bitmap(input_image,argv[2]);
   cpu_time_used = (double)(end - start);
   printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
   return 0;
