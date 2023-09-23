@@ -68,7 +68,7 @@ void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x,
 //     bitend = 0x01 << bit - 4;
 //   }
 //   // bottom
-//   else if (y == 118 && bit < 4)
+//   else if (y == BIT_WIDTH-1 && bit < 4)
 //   {
 //     bitstart = 0x01 << bit + 3;
 //     bitend = 0x02;
@@ -95,7 +95,7 @@ void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x,
 //     {
 //       return (image[start + i][yend] & bitend);
 //     }
-//     else if (y == 118 && bit < 4)
+//     else if (y == BIT_WIDTH-1 && bit < 4)
 //     {
 //       return ((image[start + i][y] & bitstart));
 //     }
@@ -131,7 +131,7 @@ void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x,
 //             {
 //             }
 //             // If it is to close to the bottom
-//             else if ((y == 118 && bit < 5) &&
+//             else if ((y == BIT_WIDTH-1 && bit < 5) &&
 //                      (((x > 3) && ((image[x - 3][y] & 0xFE) << (4 - bit))) ||
 //                       ((x <= 946) && ((image[x + 4][y] & 0xFE) << (4 - bit))) ||
 //                       checkTheXAksis(image, x, y, bit)))

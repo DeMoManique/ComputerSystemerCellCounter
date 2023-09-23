@@ -67,7 +67,7 @@ unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH])
 
 // Convert pixels to bits
 void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
-    unsigned char output[BMP_WIDTH][119],
+    unsigned char output[BMP_WIDTH][BIT_WIDTH],
     int threshold)
 {
     for (int x = 0; x < BMP_WIDTH; x++) {
@@ -82,10 +82,10 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
 }
 
 // convert bits to pixels
-void printBits(unsigned char image[BMP_WIDTH][119], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
+void printBits(unsigned char image[BMP_WIDTH][BIT_WIDTH], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
     for (int x = 0; x < BMP_WIDTH; x++) {
-        for (int y = 0; y < 119; y++) {
+        for (int y = 0; y < BIT_WIDTH; y++) {
             for (int i = 0; i < 8; i++) {
                 if ((image[x][y] >> (7 - i)) & 0x01) { // if the current bit is 1
                     output_image[x][y * 8 + i][0] = 255;

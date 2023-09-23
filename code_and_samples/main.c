@@ -18,10 +18,9 @@ double cpu_time_used;
 
 // Declaring the array to store the image (unsigned char = unsigned 8 bit)
 unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-unsigned char output_image_bit[952][119];
-unsigned char control_image_bit[952][119];
+unsigned char greyImage[BMP_WIDTH][BMP_HEIGTH];
+  unsigned char bitImage[BMP_WIDTH][BIT_WIDTH];
+  unsigned char controlImage[BMP_WIDTH][BIT_WIDTH];
 
 void delay(int number_of_seconds)
 {
@@ -32,32 +31,30 @@ void delay(int number_of_seconds)
   clock_t start_time = clock();
 
   // looping till required time is not achieved
-  while (clock() < start_time + milli_seconds)
-    ;
+  while (clock() < start_time + milli_seconds);
 }
 
 // Main function
 int main(int argc, char** argv)
 {
   start = clock();
-  int threshold;
+  
   //printf("Reading image \n");
   read_bitmap(argv[1], input_image);
   //printf("greyscaling \n");
-  unsigned char greyImage[BMP_WIDTH][BMP_HEIGTH];
   imageGreyScaling(input_image, greyImage);
   //printf("calculating threshold: ");
-  threshold = otsuThreshold(greyImage);
+  int threshold=otsuThreshold(greyImage);
   //printf("%d \nconverting to bits\n", threshold);
-  unsigned char bitImage[BMP_WIDTH][119];
 
-    imageToBits(greyImage, bitImage, threshold-20);
+
+  imageToBits(greyImage, bitImage, threshold - 20);
 
   //printf("printing image\n");
   // printBits(bitImage, output_image);
   // write_bitmap(output_image, argv[2]);
   //printf("Eroding image\n");
-  unsigned char controlImage[BMP_WIDTH][119];
+  
   int counter = 0;
   //printBits(bitImage, output_image);
   //write_bitmap(output_image, argv[3]);
