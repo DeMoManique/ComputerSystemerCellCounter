@@ -4,12 +4,10 @@
 
 // function to copy the image to a control image used in erode
 void copyArray(unsigned char image[BMP_WIDTH][119],
-               unsigned char control[BMP_WIDTH][119])
+    unsigned char control[BMP_WIDTH][119])
 {
-    for (int x = 0; x < BMP_WIDTH; x++)
-    {
-        for (int y = 0; y < 119; y++)
-        {
+    for (int x = 0; x < BMP_WIDTH; x++) {
+        for (int y = 0; y < 119; y++) {
             control[x][y] = image[x][y];
         }
     }
@@ -17,8 +15,7 @@ void copyArray(unsigned char image[BMP_WIDTH][119],
 // Names are a bit misleading, just easier to think of this way
 char aboveNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
-    if (x == 0)
-    { // if its the "top" edge, return all white
+    if (x == 0) { // if its the "top" edge, return all white
         return 0xFF;
     }
     return image[x - 1][y]; // else return the char "above"
@@ -26,8 +23,7 @@ char aboveNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 
 char belowNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
-    if (x == BMP_WIDTH - 1)
-    { // if its the "bottom" edge, return all white
+    if (x == BMP_WIDTH - 1) { // if its the "bottom" edge, return all white
         return 0xFF;
     }
     return image[x + 1][y]; // else return the char "below"
@@ -36,8 +32,7 @@ char belowNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 char LeftNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
     // the left neighbor can be put on top by bit shifting to the right
-    if (y == 0)
-    { // if its the left most edge, add 1 as most siginficant bit
+    if (y == 0) { // if its the left most edge, add 1 as most siginficant bit
         return ((image[x][y] >> 1) | 0x80);
     }
     return ((image[x][y] >> 1) | (image[x][y - 1] << 7)); // else add the least significant bit of the last char
@@ -46,8 +41,7 @@ char LeftNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 char RightNeighbor(unsigned char image[BMP_WIDTH][119], int x, int y)
 {
     // the right neighbor can be put on top by bit shifting to the left
-    if (y == 118)
-    {
+    if (y == 118) {
         // if its the left most edge, add 1 as least significant bit
         return ((image[x][y] << 1) | 0x01);
     }
@@ -61,17 +55,14 @@ unsigned char erodeChar(unsigned char image[BMP_WIDTH][119], int x, int y)
 }
 
 char erode(unsigned char image[BMP_WIDTH][119],
-                   unsigned char control[BMP_WIDTH][119])
+    unsigned char control[BMP_WIDTH][119])
 {
     copyArray(image, control); //Makes control image be equal to image
     char boolean = 0; // a boolean to return, is 1 if something was removed
 
-    for (int x = 0; x < BMP_WIDTH; x++)
-    {
-        for (int y = 0; y < 119; y++)
-        {
-            if (control[x][y])
-            {   //if there is a pixel in the char
+    for (int x = 0; x < BMP_WIDTH; x++) {
+        for (int y = 0; y < 119; y++) {
+            if (control[x][y]) {   //if there is a pixel in the char
                 image[x][y] &= erodeChar(control, x, y);
                 boolean = 1;
             }

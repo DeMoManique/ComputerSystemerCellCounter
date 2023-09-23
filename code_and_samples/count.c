@@ -6,14 +6,10 @@
 #define crossWidth 1
 void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x, int y)
 {
-  for (int xx = x - crossLength; xx <= x + crossLength; xx++)
-  {
-    if (xx >= 0 && xx < BMP_WIDTH)
-    {
-      for (int yy = y - crossWidth; yy <= y + crossWidth; yy++)
-      {
-        if (yy >= 0 && yy < BMP_HEIGTH)
-        {
+  for (int xx = x - crossLength; xx <= x + crossLength; xx++) {
+    if (xx >= 0 && xx < BMP_WIDTH) {
+      for (int yy = y - crossWidth; yy <= y + crossWidth; yy++) {
+        if (yy >= 0 && yy < BMP_HEIGTH) {
           image[xx][yy][0] = 255;
           image[xx][yy][1] = 0;
           image[xx][yy][2] = 0;
@@ -21,14 +17,10 @@ void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x,
       }
     }
   }
-  for (int yy = y - crossLength; yy <= y + crossLength; yy++)
-  {
-    if (yy >= 0 && yy < BMP_HEIGTH)
-    {
-      for (int xx = x - crossWidth; xx <= x + crossWidth; xx++)
-      {
-        if (xx >= 0 && xx < BMP_WIDTH)
-        {
+  for (int yy = y - crossLength; yy <= y + crossLength; yy++) {
+    if (yy >= 0 && yy < BMP_HEIGTH) {
+      for (int xx = x - crossWidth; xx <= x + crossWidth; xx++) {
+        if (xx >= 0 && xx < BMP_WIDTH) {
           image[xx][yy][0] = 255;
           image[xx][yy][1] = 0;
           image[xx][yy][2] = 0;
@@ -195,27 +187,21 @@ void paintCross(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], int x,
 
 char aboveRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 {
-  if (x < 3)
-  {
+  if (x < 3) {
     return 0;
   }
-  if (bit == 3)
-  {
+  if (bit == 3) {
     return image[x - 3][y];
   }
-  else if (bit < 3)
-  {
-    if (y == 0)
-    {
+  else if (bit < 3) {
+    if (y == 0) {
       return (image[x - 3][y] >> (3 - bit));
     }
-    return ((image[x - 3][y] >> (3 - bit)) | 
-            (image[x - 3][y - 1] << (5 + bit)));
+    return ((image[x - 3][y] >> (3 - bit)) |
+      (image[x - 3][y - 1] << (5 + bit)));
   }
-  else
-  {
-    if (y == BIT_WIDTH - 1)
-    {
+  else {
+    if (y == BIT_WIDTH - 1) {
       return (image[x - 3][y] << (bit - 3));
     }
     return ((image[x - 3][y] << (bit - 3)) | (image[x - 3][y + 1] >> (11 - bit)));
@@ -223,27 +209,21 @@ char aboveRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 }
 char belowRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 {
-  if (x >= BMP_WIDTH - 4)
-  {
+  if (x >= BMP_WIDTH - 4) {
     return 0;
   }
-  if (bit == 3)
-  {
+  if (bit == 3) {
     return image[x + 4][y];
   }
-  else if (bit < 3)
-  {
-    if (y == 0)
-    {
+  else if (bit < 3) {
+    if (y == 0) {
       return (image[x + 4][y] >> (3 - bit));
     }
-    return ((image[x + 4][y] >> (3 - bit)) | 
-            (image[x + 4][y - 1] << (5 + bit)));
+    return ((image[x + 4][y] >> (3 - bit)) |
+      (image[x + 4][y - 1] << (5 + bit)));
   }
-  else
-  {
-    if (y == BIT_WIDTH - 1)
-    {
+  else {
+    if (y == BIT_WIDTH - 1) {
       return (image[x + 4][y] << (bit - 3));
     }
     return ((image[x + 4][y] << (bit - 3)) | (image[x + 4][y + 1] >> (11 - bit)));
@@ -251,34 +231,26 @@ char belowRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 }
 char leftRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 {
-  if (y == 0 && bit < 3)
-  {
+  if (y == 0 && bit < 3) {
     return 0;
   }
-  if (bit < 3)
-  {
-    for (int xx = x - 3; xx <= x + 4; xx++)
-    {
-      if (xx < 0 && xx >= BMP_WIDTH)
-      {
+  if (bit < 3) {
+    for (int xx = x - 3; xx <= x + 4; xx++) {
+      if (xx < 0 && xx >= BMP_WIDTH) {
         continue;
       }
-      if ((image[xx][y - 1] >> (2 - bit)) & 0x01)
-      {
+      if ((image[xx][y - 1] >> (2 - bit)) & 0x01) {
         return 1;
       }
     }
   }
-  else
-  {
-    for (int xx = x - 3; xx <= x + 4; xx++)
-    {
-      if (xx < 0 && xx >= BMP_WIDTH)
-      {
+  else {
+    for (int xx = x - 3; xx <= x + 4; xx++) {
+      if (xx < 0 && xx >= BMP_WIDTH) {
         continue;
       }
-      if ((image[xx][y] >> (bit - 3)) & 0x80)
-      {
+      if ((image[xx][y] >> (bit - 3)) & 0x80) {
+
         return 1;
       }
     }
@@ -287,34 +259,25 @@ char leftRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 }
 char rightRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 {
-  if (y == BIT_WIDTH - 1 && bit > 3)
-  {
+  if (y == BIT_WIDTH - 1 && bit > 3) {
     return 0;
   }
-  if (bit > 3)
-  {
-    for (int xx = x - 3; xx <= x + 4; xx++)
-    {
-      if (xx < 0 && xx >= BMP_WIDTH)
-      {
+  if (bit > 3) {
+    for (int xx = x - 3; xx <= x + 4; xx++) {
+      if (xx < 0 && xx >= BMP_WIDTH) {
         continue;
       }
-      if ((image[xx][y + 1] << (bit - 4)) & 0x80)
-      {
+      if ((image[xx][y + 1] << (bit - 4)) & 0x80) {
         return 1;
       }
     }
   }
-  else
-  {
-    for (int xx = x - 3; xx <= x + 4; xx++)
-    {
-      if (xx < 0 && xx >= BMP_WIDTH)
-      {
+  else {
+    for (int xx = x - 3; xx <= x + 4; xx++) {
+      if (xx < 0 && xx >= BMP_WIDTH) {
         continue;
       }
-      if ((image[xx][y] >> (3 - bit)) & 0x01)
-      {
+      if ((image[xx][y] >> (3 - bit)) & 0x01) {
         return 1;
       }
     }
@@ -325,58 +288,44 @@ char rightRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 char checkBox(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 {
   if (aboveRow(image, x, y, bit) ||
-      belowRow(image, x, y, bit) ||
-      rightRow(image, x, y, bit) ||
-      leftRow(image, x, y, bit))
-  {
+    belowRow(image, x, y, bit) ||
+    rightRow(image, x, y, bit) ||
+    leftRow(image, x, y, bit)) {
     return 1;
   }
   return 0;
 }
 void eraseCell(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
 {
-  for (int xx = x - 3; xx <= x + 4; xx++)
-  {
-    if (xx < 0 && xx >= BMP_WIDTH)
-    {
+  for (int xx = x - 3; xx <= x + 4; xx++) {
+    if (xx < 0 && xx >= BMP_WIDTH) {
       continue;
     }
-    if (bit == 3)
-    {
+    if (bit == 3) {
       image[xx][y] = 0;
     }
-    else if (bit < 3)
-    {
+    else if (bit < 3) {
       image[xx][y] &= 0xFF >> (5 + bit);
-      if (y != 0)
-      {
+      if (y != 0) {
         image[xx][y - 1] &= 0xFF << (3 - bit);
       }
     }
-    else
-    {
+    else {
       image[xx][y] &= 0xFF << (11 - bit);
-      if (y != BIT_WIDTH - 1)
-      {
+      if (y != BIT_WIDTH - 1) {
         image[xx][y + 1] &= 0xFF >> (bit - 3);
       }
     }
   }
 }
-int count(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter,unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
+int count(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter, unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
 {
-  for (int x = 0; x < BMP_WIDTH; x++)
-  {
-    for (int y = 0; y < BIT_WIDTH; y++)
-    {
-      if (image[x][y])
-      {
-        for (char bit = 0; bit < 8; bit++)
-        {
-          if ((image[x][y] >> (7 - bit)) & 0x01)
-          {
-            if (!checkBox(image, x, y, bit))
-            {
+  for (int x = 0; x < BMP_WIDTH; x++) {
+    for (int y = 0; y < BIT_WIDTH; y++) {
+      if (image[x][y]) {
+        for (char bit = 0; bit < 8; bit++) {
+          if ((image[x][y] >> (7 - bit)) & 0x01) {
+            if (!checkBox(image, x, y, bit)) {
               paintCross(input_image, x, y * 8 + bit);
               counter++;
               eraseCell(image, x, y, bit);
@@ -389,4 +338,3 @@ int count(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter,unsigned char i
   }
   return counter;
 }
-
