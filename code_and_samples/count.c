@@ -249,7 +249,7 @@ char leftRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
       if (xx < 0 && xx >= BMP_WIDTH) {
         continue;
       }
-      if ((image[xx][y] >> (bit - 3)) & 0x80) {
+      if ((image[xx][y] << (bit - 3)) & 0x80) {
 
         return 1;
       }
