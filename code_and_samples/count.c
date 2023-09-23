@@ -162,21 +162,36 @@ int countCellsBit(unsigned char image[952][119],
   return count;
 }
 
-char aboveRow()
+char aboveRow(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
+{
+  if(x < 3){
+    return 0;
+  }
+  if(bit == 3){
+    return image[x-3][y]
+  }
+}
+char belowRow(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
+{
+  if(x > BMP_WIDTH){
+    return 0;
+  }
+  if(bit == 3){
+    return image[x+4][y]
+  }
+}
+char rightRow(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
 {
 }
-char belowRow()
+char leftRow(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
 {
 }
-char rightRow()
+char checkBox(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
 {
-}
-char leftRow()
-{
-}
-char checkBox()
-{
-  return aboveRow() & belowRow() & rightRow() & leftRow();
+  return aboveRow(image, x, y, bit) |
+         belowRow(image, x, y, bit) |
+         rightRow(image, x, y, bit) |
+         leftRow(image, x, y, bit);
 }
 void eraseCell(unsigned char image[BMP_WIDTH][119], int x, int y, char bit)
 {
@@ -193,7 +208,7 @@ int count(unsigned char image[BMP_WIDTH][119], int counter)
         {
           if ((image[x][y] >> (7 - bit)) & 0x01)
           {
-            if (!checkBox())
+            if (!checkBox(image, x, y, bit))
             {
               paintCross(input_image, x, y * 8 + bit);
               counter++;
