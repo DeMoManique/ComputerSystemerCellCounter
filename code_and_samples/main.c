@@ -54,8 +54,8 @@ int main(int argc, char** argv)
     imageToBits(greyImage, bitImage, threshold-20);
 
   //printf("printing image\n");
-  printBits(bitImage, output_image);
-  write_bitmap(output_image, argv[2]);
+  // printBits(bitImage, output_image);
+  // write_bitmap(output_image, argv[2]);
   //printf("Eroding image\n");
   unsigned char controlImage[BMP_WIDTH][119];
   int counter = 0;
