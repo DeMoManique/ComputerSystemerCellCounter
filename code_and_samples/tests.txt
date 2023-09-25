@@ -21,4 +21,5 @@ main.exe samples/MEDIUM/9MEDIUM.bmp samples/MEDIUM/9MEDIUMoutput.bmp samples/MED
 main.exe samples/impossible/1IMPOSSIBLE.bmp samples/impossible/1IMPOSSIBLEoutput.bmp samples/impossible/1IMPOSSIBLEblackwhite.bmp
 
 
-main.exe samples/easy/1EASY.bmp 
+main.exe samples/easy/1EASY.bmp a1.bmp
+main.exe samples/test/edgeTest.bmp a1.bmp

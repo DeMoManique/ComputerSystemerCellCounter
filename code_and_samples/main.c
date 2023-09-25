@@ -17,8 +17,9 @@ clock_t start, end;
 double cpu_time_used;
 
 // Declaring the array to store the image (unsigned char = unsigned 8 bit)
-unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-unsigned char greyImage[BMP_WIDTH][BMP_HEIGTH];
+  unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
+  unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]; // skal fjernes
+  unsigned char greyImage[BMP_WIDTH][BMP_HEIGTH];
   unsigned char bitImage[BMP_WIDTH][BIT_WIDTH];
   unsigned char controlImage[BMP_WIDTH][BIT_WIDTH];
 
@@ -45,7 +46,7 @@ int main(int argc, char** argv)
   imageGreyScaling(input_image, greyImage);
   //printf("calculating threshold: ");
   int threshold=otsuThreshold(greyImage);
-  //printf("%d \nconverting to bits\n", threshold);
+  // printf("%d \nconverting to bits\n", threshold);
 
 
   imageToBits(greyImage, bitImage, threshold - 20);
@@ -56,9 +57,13 @@ int main(int argc, char** argv)
   //printf("Eroding image\n");
   
   int counter = 0;
-  //printBits(bitImage, output_image);
-  //write_bitmap(output_image, argv[3]);
   while (erode(bitImage, controlImage)) {
+
+    // skal fjernes
+    // delay(1);
+    // printBits(bitImage, output_image);
+    // write_bitmap(output_image, argv[2]);
+    
     counter = count(bitImage, counter, input_image);
   }
   write_bitmap(input_image, argv[2]);
