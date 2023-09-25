@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 
 
   start = clock();
-  imageToBits(greyImage, bitImage, threshold - 20);
+  imageToBits(greyImage, bitImage, threshold-20);
   end = clock();
 
   //printf("printing image\n");
@@ -58,12 +58,10 @@ int main(int argc, char** argv)
   //printf("Eroding image\n");
   
   int counter = 0;
-  while (erode(bitImage, controlImage,0)) {
-
-    // skal fjernes
-    // delay(1);
-    // printBits(bitImage, output_image);
-    // write_bitmap(output_image, argv[2]);
+  while (erode(bitImage, controlImage,1)) {
+     delay(1);
+     printBits(bitImage, output_image);
+     write_bitmap(output_image, argv[2]);
     
     counter = count(bitImage, counter, input_image);
   }

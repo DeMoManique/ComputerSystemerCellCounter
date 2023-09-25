@@ -135,37 +135,40 @@ char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
     switch (mode)
     {
     case 1:
+        
         switch (switchMode)
         {
         case 1:
-        for (int x = 0; x < BMP_WIDTH; x++)
-        {
-            for (int y = 0; y < BIT_WIDTH; y++)
+            for (int x = 0; x < BMP_WIDTH; x++)
             {
-                if (control[x][y])
-                { // if there is a pixel in the char
-                    image[x][y] &= erodeModeOne(control, x, y);
-                    boolean = 1;
+                for (int y = 0; y < BIT_WIDTH; y++)
+                {
+                    if (control[x][y])
+                    { // if there is a pixel in the char
+                        image[x][y] &= erodeModeOne(control, x, y);
+                        boolean = 1;
+                    }
                 }
             }
-        }
             switchMode = 2;
-        break;
+            break;
 
         case 2:
-        for (int x = 0; x < BMP_WIDTH; x++)
-        {
-            for (int y = 0; y < BIT_WIDTH; y++)
+            for (int x = 0; x < BMP_WIDTH; x++)
             {
-                if (control[x][y])
-                { // if there is a pixel in the char
-                    image[x][y] &= erodeModeTwo(control, x, y);
-                    boolean = 1;
+                for (int y = 0; y < BIT_WIDTH; y++)
+                {
+                    if (control[x][y])
+                    { // if there is a pixel in the char
+                        image[x][y] &= erodeModeTwo(control, x, y);
+                        boolean = 1;
+                    }
                 }
             }
-        }
             switchMode = 1;
-        break;}
+            break;
+        }
+        break;
 
     default:
         for (int x = 0; x < BMP_WIDTH; x++)
