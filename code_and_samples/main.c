@@ -297,7 +297,7 @@ void function(char *image, char *out, unsigned char input_image[BMP_WIDTH][BMP_H
   // paints the cross
   for (int i = 0; i < count; i++)
   {
-    printf("%d :(%d;%d)\n", i, coords[i][0], coords[i][1]);
+    printf("%d :(%d;%d)\n", i+1, coords[i][0], coords[i][1]);
     for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++)
     {
       for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++)
@@ -348,9 +348,10 @@ int main(int argc, char **argv)
 
 
   start = clock();
-  while(erode(control_image,output_image)){
+  function(input, out, input_image, count, coords, threshold, thresholdLower, searchRadius, crossLength, crossWidth);
+  // while(erode(control_image,output_image)){
 
-  }
+  // }
   end = clock();
 
   cpu_time_used = (double)(end - start);
