@@ -58,46 +58,54 @@ char RightNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 
 char leftAboveNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    if (x == 0) { // if its the "top" edge, return all white
+    if (x == 0)
+    { // if its the "top" edge, return all white
         return 0xFF;
     }
-    if (y == 0) { // if its the left most edge, add 1 as most siginficant bit
-        return ((image[x-1][y] >> 1) | 0x80);
+    if (y == 0)
+    { // if its the left most edge, add 1 as most siginficant bit
+        return ((image[x - 1][y] >> 1) | 0x80);
     }
-    return ((image[x-1][y] >> 1) | (image[x-1][y - 1] << 7)); // else add the least significant bit of the last char
+    return ((image[x - 1][y] >> 1) | (image[x - 1][y - 1] << 7)); // else add the least significant bit of the last char
 }
 
 char leftBelowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    if (x == 0) { // if its the "top" edge, return all white
+    if (x == 0)
+    { // if its the "top" edge, return all white
         return 0xFF;
     }
-    if (y == BIT_WIDTH-1) { // if its the left most edge, add 1 as LSB
-        return ((image[x-1][y] << 1) | 0x01);
+    if (y == BIT_WIDTH - 1)
+    { // if its the left most edge, add 1 as LSB
+        return ((image[x - 1][y] << 1) | 0x01);
     }
-    return ((image[x-1][y] << 1) | (image[x-1][y + 1] >> 7)); // else add the least significant bit of the last char
+    return ((image[x - 1][y] << 1) | (image[x - 1][y + 1] >> 7)); // else add the least significant bit of the last char
 }
 
 char rightAboveNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    if (x == BIT_WIDTH-1) { // if its the "bottom" edge, return all white
+    if (x == BIT_WIDTH - 1)
+    { // if its the "bottom" edge, return all white
         return 0xFF;
     }
-    if (y == 0) { // if its the left most edge, add 1 as most siginficant bit
-        return ((image[x+1][y] >> 1) | 0x80);
+    if (y == 0)
+    { // if its the left most edge, add 1 as most siginficant bit
+        return ((image[x + 1][y] >> 1) | 0x80);
     }
-    return ((image[x+1][y] >> 1) | (image[x+1][y - 1] << 7)); // else add the least significant bit of the last char
+    return ((image[x + 1][y] >> 1) | (image[x + 1][y - 1] << 7)); // else add the least significant bit of the last char
 }
 
 char rightBelowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    if (x == BMP_WIDTH-1) { // if its the "bottom" edge, return all white
+    if (x == BMP_WIDTH - 1)
+    { // if its the "bottom" edge, return all white
         return 0xFF;
     }
-    if (y == BIT_WIDTH-1) { // if its the left most edge, add 1 as LSB
-        return ((image[x+1][y] << 1) | 0x01);
+    if (y == BIT_WIDTH - 1)
+    { // if its the left most edge, add 1 as LSB
+        return ((image[x + 1][y] << 1) | 0x01);
     }
-    return ((image[x+1][y] << 1) | (image[x+1][y + 1] >> 7)); // else add the least significant bit of the last char
+    return ((image[x + 1][y] << 1) | (image[x + 1][y + 1] >> 7)); // else add the least significant bit of the last char
 }
 
 // Check all neighbors in one function, makes erode more readable
@@ -113,18 +121,53 @@ unsigned char erodeModeOne(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int
 
 unsigned char erodeModeTwo(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    return (belowNeighbor(image, x, y) && LeftNeighbor(image, x, y));
+    return (belowNeighbor(image, x, y) & LeftNeighbor(image, x, y));
 }
 
-
+char switchMode = 1;
 char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
            unsigned char control[BMP_WIDTH][BIT_WIDTH],
            char mode)
 {
     copyArray(image, control); // Makes control image be equal to image
     char boolean = 0;          // a boolean to return, is 1 if something was removed
-    if (mode == 0)
+
+    switch (mode)
     {
+    case 1:
+        switch (switchMode)
+        {
+        case 1:
+        for (int x = 0; x < BMP_WIDTH; x++)
+        {
+            for (int y = 0; y < BIT_WIDTH; y++)
+            {
+                if (control[x][y])
+                { // if there is a pixel in the char
+                    image[x][y] &= erodeModeOne(control, x, y);
+                    boolean = 1;
+                }
+            }
+        }
+            switchMode = 2;
+        break;
+
+        case 2:
+        for (int x = 0; x < BMP_WIDTH; x++)
+        {
+            for (int y = 0; y < BIT_WIDTH; y++)
+            {
+                if (control[x][y])
+                { // if there is a pixel in the char
+                    image[x][y] &= erodeModeTwo(control, x, y);
+                    boolean = 1;
+                }
+            }
+        }
+            switchMode = 1;
+        break;}
+
+    default:
         for (int x = 0; x < BMP_WIDTH; x++)
         {
             for (int y = 0; y < BIT_WIDTH; y++)
@@ -136,9 +179,7 @@ char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
                 }
             }
         }
-    }
-    else {
-        
+        break;
     }
 
     return boolean; // returns 1 or 0
