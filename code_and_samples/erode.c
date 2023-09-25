@@ -35,7 +35,7 @@ char belowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
     return image[x + 1][y]; // else return the char "below"
 }
 
-char LeftNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+char leftNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
     // the left neighbor can be put on top by bit shifting to the right
     if (y == 0)
@@ -45,7 +45,7 @@ char LeftNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
     return ((image[x][y] >> 1) | (image[x][y - 1] << 7)); // else add the least significant bit of the last char
 }
 
-char RightNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+char rightNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
     // the right neighbor can be put on top by bit shifting to the left
     if (y == BIT_WIDTH - 1)
@@ -111,17 +111,27 @@ char rightBelowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 // Check all neighbors in one function, makes erode more readable
 unsigned char erodeChar(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    return ((aboveNeighbor(image, x, y) & belowNeighbor(image, x, y)) & (LeftNeighbor(image, x, y) & RightNeighbor(image, x, y)));
+    return ((aboveNeighbor(image, x, y) & belowNeighbor(image, x, y)) & (leftNeighbor(image, x, y) & rightNeighbor(image, x, y)));
 }
 
-unsigned char erodeModeOne(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+unsigned char erodeModeUpRight(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    return (aboveNeighbor(image, x, y) & RightNeighbor(image, x, y));
+    return (aboveNeighbor(image, x, y) & rightNeighbor(image, x, y));
 }
 
-unsigned char erodeModeTwo(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+unsigned char erodeModeDownRight(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
-    return (belowNeighbor(image, x, y) & LeftNeighbor(image, x, y));
+    return (belowNeighbor(image, x, y) & rightNeighbor(image, x, y));
+}
+
+unsigned char erodeModeUpLeft(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    return (aboveNeighbor(image, x, y) & leftNeighbor(image, x, y));
+}
+
+unsigned char erodeModeDownLeft(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    return (belowNeighbor(image, x, y) & leftNeighbor(image, x, y));
 }
 
 char switchMode = 1;
@@ -145,7 +155,7 @@ char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
                 {
                     if (control[x][y])
                     { // if there is a pixel in the char
-                        image[x][y] &= erodeModeOne(control, x, y);
+                        image[x][y] &= erodeModeUpRight(control, x, y);
                         boolean = 1;
                     }
                 }
@@ -160,7 +170,37 @@ char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
                 {
                     if (control[x][y])
                     { // if there is a pixel in the char
-                        image[x][y] &= erodeModeTwo(control, x, y);
+                        image[x][y] &= erodeModeDownRight(control, x, y);
+                        boolean = 1;
+                    }
+                }
+            }
+            switchMode = 3;
+            break;
+
+        case 3:
+            for (int x = 0; x < BMP_WIDTH; x++)
+            {
+                for (int y = 0; y < BIT_WIDTH; y++)
+                {
+                    if (control[x][y])
+                    { // if there is a pixel in the char
+                        image[x][y] &= erodeModeDownLeft(control, x, y);
+                        boolean = 1;
+                    }
+                }
+            }
+            switchMode = 4;
+            break;
+
+        case 4:
+            for (int x = 0; x < BMP_WIDTH; x++)
+            {
+                for (int y = 0; y < BIT_WIDTH; y++)
+                {
+                    if (control[x][y])
+                    { // if there is a pixel in the char
+                        image[x][y] &= erodeModeUpLeft(control, x, y);
                         boolean = 1;
                     }
                 }
