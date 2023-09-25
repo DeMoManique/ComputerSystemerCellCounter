@@ -58,7 +58,7 @@ int main(int argc, char** argv)
   //printf("Eroding image\n");
   
   int counter = 0;
-  while (erode(bitImage, controlImage)) {
+  while (erode(bitImage, controlImage,0)) {
 
     // skal fjernes
     // delay(1);
