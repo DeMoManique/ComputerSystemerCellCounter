@@ -54,8 +54,8 @@ unsigned char erodeChar(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
     return ((aboveNeighbor(image, x, y) & belowNeighbor(image, x, y)) & (LeftNeighbor(image, x, y) & RightNeighbor(image, x, y)));
 }
 
-unsigned char erodeModeOne(){
-
+unsigned char erodeModeOne(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y){
+    return(aboveNeighbor(image, x, y) & RightNeighbor(image, x, y));
 }
 
 unsigned char erodeModeTwo(){
