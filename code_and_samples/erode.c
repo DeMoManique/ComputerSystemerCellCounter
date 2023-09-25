@@ -134,6 +134,16 @@ unsigned char erodeModeDownLeft(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x
     return (belowNeighbor(image, x, y) & leftNeighbor(image, x, y));
 }
 
+unsigned char erodeModeUpDown(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    return (aboveNeighbor(image, x, y) & belowNeighbor(image, x, y));
+}
+
+unsigned char erodeModeLeftRight(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    return (leftNeighbor(image, x, y) & rightNeighbor(image, x, y));
+}
+
 char switchMode = 1;
 char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
            unsigned char control[BMP_WIDTH][BIT_WIDTH],
@@ -201,6 +211,41 @@ char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
                     if (control[x][y])
                     { // if there is a pixel in the char
                         image[x][y] &= erodeModeUpLeft(control, x, y);
+                        boolean = 1;
+                    }
+                }
+            }
+            switchMode = 1;
+            break;
+        }
+        break;
+
+    case 2:
+        switch (switchMode)
+        {
+        case 1:
+            for (int x = 0; x < BMP_WIDTH; x++)
+            {
+                for (int y = 0; y < BIT_WIDTH; y++)
+                {
+                    if (control[x][y])
+                    { // if there is a pixel in the char
+                        image[x][y] &= erodeModeUpDown(control, x, y);
+                        boolean = 1;
+                    }
+                }
+            }
+            switchMode = 2;
+            break;
+        
+        case 2:
+            for (int x = 0; x < BMP_WIDTH; x++)
+            {
+                for (int y = 0; y < BIT_WIDTH; y++)
+                {
+                    if (control[x][y])
+                    { // if there is a pixel in the char
+                        image[x][y] &= erodeModeLeftRight(control, x, y);
                         boolean = 1;
                     }
                 }
