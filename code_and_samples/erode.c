@@ -21,7 +21,7 @@ char aboveNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
     if (x == 0)
     { // if its the "top" edge, return all white
-        return 0x00;
+        return 0xFF;
     }
     return image[x - 1][y]; // else return the char "above"
 }
@@ -30,7 +30,7 @@ char belowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
     if (x == BMP_WIDTH - 1)
     { // if its the "bottom" edge, return all white
-        return 0x00;
+        return 0xFF;
     }
     return image[x + 1][y]; // else return the char "below"
 }
@@ -40,7 +40,7 @@ char leftNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
     // the left neighbor can be put on top by bit shifting to the right
     if (y == 0)
     { // if its the left most edge, add 1 as most siginficant bit
-        return ((image[x][y] >> 1) | 0x00);
+        return ((image[x][y] >> 1) | 0x80);
     }
     return ((image[x][y] >> 1) | (image[x][y - 1] << 7)); // else add the least significant bit of the last char
 }
@@ -51,7 +51,7 @@ char rightNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
     if (y == BIT_WIDTH - 1)
     {
         // if its the left most edge, add 1 as least significant bit
-        return ((image[x][y] << 1) | 0x00);
+        return ((image[x][y] << 1) | 0x01);
     }
     return ((image[x][y] << 1) | (image[x][y + 1] >> 7)); // else add the most siginficant bit of the last char
 }

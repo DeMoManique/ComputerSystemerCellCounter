@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   // printf("%d \nconverting to bits\n", threshold);
 
   start = clock();
-  imageToBits(greyImage, bitImage, threshold - 20);
+  imageToBits(greyImage, bitImage, threshold - 23);
   end = clock();
 
   // printf("printing image\n");
@@ -60,9 +60,9 @@ int main(int argc, char **argv)
   int counter = 0;
   while (erode(bitImage, controlImage, 1))
   {
-    //  delay(1);
-    //  printBits(bitImage, output_image);
-    //  write_bitmap(output_image, argv[2]);
+      // delay(1);
+      // printBits(bitImage, output_image);
+      // write_bitmap(output_image, argv[2]);
 
     counter = count(bitImage, counter, input_image);
   }
