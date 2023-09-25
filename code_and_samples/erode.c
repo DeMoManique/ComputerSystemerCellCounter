@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "cbmp.h"
 
+char placeholder = 0;
+
 // function to copy the image to a control image used in erode
 void copyArray(unsigned char image[BMP_WIDTH][BIT_WIDTH],
                unsigned char control[BMP_WIDTH][BIT_WIDTH])
@@ -54,6 +56,50 @@ char RightNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
     return ((image[x][y] << 1) | (image[x][y + 1] >> 7)); // else add the most siginficant bit of the last char
 }
 
+char leftAboveNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    if (x == 0) { // if its the "top" edge, return all white
+        return 0xFF;
+    }
+    if (y == 0) { // if its the left most edge, add 1 as most siginficant bit
+        return ((image[x-1][y] >> 1) | 0x80);
+    }
+    return ((image[x-1][y] >> 1) | (image[x-1][y - 1] << 7)); // else add the least significant bit of the last char
+}
+
+char leftBelowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    if (x == 0) { // if its the "top" edge, return all white
+        return 0xFF;
+    }
+    if (y == BIT_WIDTH-1) { // if its the left most edge, add 1 as LSB
+        return ((image[x-1][y] << 1) | 0x01);
+    }
+    return ((image[x-1][y] << 1) | (image[x-1][y + 1] >> 7)); // else add the least significant bit of the last char
+}
+
+char rightAboveNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    if (x == BIT_WIDTH-1) { // if its the "bottom" edge, return all white
+        return 0xFF;
+    }
+    if (y == 0) { // if its the left most edge, add 1 as most siginficant bit
+        return ((image[x+1][y] >> 1) | 0x80);
+    }
+    return ((image[x+1][y] >> 1) | (image[x+1][y - 1] << 7)); // else add the least significant bit of the last char
+}
+
+char rightBelowNeighbor(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
+{
+    if (x == BMP_WIDTH-1) { // if its the "bottom" edge, return all white
+        return 0xFF;
+    }
+    if (y == BIT_WIDTH-1) { // if its the left most edge, add 1 as LSB
+        return ((image[x+1][y] << 1) | 0x01);
+    }
+    return ((image[x+1][y] << 1) | (image[x+1][y + 1] >> 7)); // else add the least significant bit of the last char
+}
+
 // Check all neighbors in one function, makes erode more readable
 unsigned char erodeChar(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y)
 {
@@ -69,6 +115,7 @@ unsigned char erodeModeTwo(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int
 {
     return (belowNeighbor(image, x, y) && LeftNeighbor(image, x, y));
 }
+
 
 char erode(unsigned char image[BMP_WIDTH][BIT_WIDTH],
            unsigned char control[BMP_WIDTH][BIT_WIDTH],
