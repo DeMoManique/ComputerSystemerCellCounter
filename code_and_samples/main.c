@@ -38,7 +38,6 @@ void delay(int number_of_seconds)
 // Main function
 int main(int argc, char** argv)
 {
-  start = clock();
   
   //printf("Reading image \n");
   read_bitmap(argv[1], input_image);
@@ -49,7 +48,9 @@ int main(int argc, char** argv)
   // printf("%d \nconverting to bits\n", threshold);
 
 
+  start = clock();
   imageToBits(greyImage, bitImage, threshold - 20);
+  end = clock();
 
   //printf("printing image\n");
   // printBits(bitImage, output_image);
@@ -68,7 +69,6 @@ int main(int argc, char** argv)
   }
   write_bitmap(input_image, argv[2]);
   printf("%d\n", counter);
-  end = clock();
   cpu_time_used = (double)(end - start);
   printf("Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
   return 0;
