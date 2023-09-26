@@ -23,8 +23,7 @@ unsigned char greyImage[BMP_WIDTH][BMP_HEIGTH];
 unsigned char bitImage[BMP_WIDTH][BIT_WIDTH];
 unsigned char controlImage[BMP_WIDTH][BIT_WIDTH];
 
-void delay(int number_of_seconds)
-{
+void delay(int number_of_seconds) {
   // Converting time into milli_seconds
   int milli_seconds = 1000 * number_of_seconds;
 
@@ -37,8 +36,7 @@ void delay(int number_of_seconds)
 }
 
 // Main function
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 
   start = clock();
   // printf("Reading image \n");
@@ -49,7 +47,7 @@ int main(int argc, char** argv)
   int threshold = otsuThreshold(greyImage);
   // printf("%d \nconverting to bits\n", threshold);
 
-  imageToBits(greyImage, bitImage, threshold-20);
+  imageToBits(greyImage, bitImage, threshold - 20);
   int counter = countLarge(bitImage, counter, input_image);
   erode(bitImage, controlImage, 0);
   erode(bitImage, controlImage, 0);
