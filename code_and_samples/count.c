@@ -233,14 +233,14 @@ char belowRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
   }
   // Same as aboveRow, but with the row to the right
   else if (bit < 3) { // If the bit is above of the middel
-    if (y == 0) { 
+    if (y == 0) {
       return (image[x + 4][y] >> (3 - bit));
     }
     return ((image[x + 4][y] >> (3 - bit)) |
       (image[x + 4][y - 1] << (5 + bit)));
   }
   else {  // If the bit is below the middel
-    if (y == BIT_WIDTH - 1) { 
+    if (y == BIT_WIDTH - 1) {
       return (image[x + 4][y] << (bit - 3));
     }
     return ((image[x + 4][y] << (bit - 3)) | (image[x + 4][y + 1] >> (11 - bit)));
@@ -288,7 +288,7 @@ char rightRow(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
       }
       if ((image[xx][y + 1] << (bit - 4)) & 0x80) { // bitshift the char (bit-4) to the left, and checks if the MSB bit is 1 in the char below
         return 1;
-      } 
+      }
     }
   }
   else {
@@ -323,13 +323,13 @@ void eraseCell(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit
     if (bit == 3) { // If the bit is in the middel of the char, just set the char to 0
       image[xx][y] = 0;
     }
-    else if (bit < 3) { // If the bit is above the middel
+    else if (bit < 3 && y >= 0) { // If the bit is above the middel
       image[xx][y] &= 0xFF >> (5 + bit);  // ands the char with 0xFF shifted 5+bit to the right, so the bits in the cell is erased and the other bits are unchanged
       if (y != 0) { // If the bit is not in the top row
         image[xx][y - 1] &= 0xFF << (3 - bit); // ands the char with 0xFF shifted 3-bit to the left, -||-
       }
     }
-    else { // If the bit is below the middel
+    else if (y >= 0) { // If the bit is below the middel
       image[xx][y] &= 0xFF << (11 - bit); // ands the char with 0xFF shifted 11-bit to the left, -||-
       if (y != BIT_WIDTH - 1) { // If the bit is not in the bottom row
         image[xx][y + 1] &= 0xFF >> (bit - 3); // ands the char with 0xFF shifted bit-3 to the right, -||-
@@ -342,12 +342,78 @@ int count(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter, unsigned char 
   for (int x = 0; x < BMP_WIDTH; x++) {
     for (int y = 0; y < BIT_WIDTH; y++) {
       if (image[x][y]) { // checks if there is a pixel in the char, through out the hole image
-        for (char bit = 0; bit < 8; bit++) { 
+        for (char bit = 0; bit < 8; bit++) {
           if ((image[x][y] >> (7 - bit)) & 0x01) { // finds the first true bit, from left to right
             if (!checkBox(image, x, y, bit)) { // checks if there can be a box around the bit with no white pixels (if there is a white pixel in the box, return 1 so it is negated)
               paintCross(input_image, x, y * 8 + bit); // paints a cross on the image
               counter++; // adds one to the counter of cells
               eraseCell(image, x, y, bit); // erases the cell
+              break; // breaks out of the for loop, so it does not check the rest of the bits
+            }
+          }
+        }
+      }
+    }
+  }
+  return counter; // returns the counter
+}
+
+char aboveRowLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
+{
+  return aboveRow(image, x - 8, y, bit) | aboveRow(image, x - 8, y - 1, bit) | aboveRow(image, x - 8, y + 1, bit);
+}
+
+// It is the row to the right of the bit
+char belowRowLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
+{
+  return belowRow(image, x + 8, y, bit) | belowRow(image, x + 8, y - 1, bit) | belowRow(image, x + 8, y + 1, bit);
+}
+
+// It is the row above the bit
+char leftRowLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
+{
+  return leftRow(image, x, y - 1, bit) | leftRow(image, x - 8, y - 1, bit) | leftRow(image, x + 9, y - 1, bit);
+}
+char rightRowLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
+{
+  return rightRow(image, x, y + 1, bit) | rightRow(image, x - 8, y + 1, bit) | rightRow(image, x + 9, y + 1, bit);
+}
+
+char checkBoxLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit) {
+
+  if (aboveRowLarge(image, x, y, bit) || // If one of the 4 rows around the bit contains a white pixel, return 1 else return 0
+    belowRowLarge(image, x, y, bit) ||
+    rightRowLarge(image, x, y, bit) ||
+    leftRowLarge(image, x, y, bit)) {
+    return 1;
+  }
+  return 0;
+}
+
+void eraseLargeCell(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit) {
+  eraseCell(image, x, y, bit);
+  eraseCell(image, x, y - 1, bit);
+  eraseCell(image, x, y + 1, bit);
+  eraseCell(image, x - 8, y, bit);
+  eraseCell(image, x - 8, y - 1, bit);
+  eraseCell(image, x - 8, y + 1, bit);
+  eraseCell(image, x + 8, y, bit);
+  eraseCell(image, x + 8, y - 1, bit);
+  eraseCell(image, x + 8, y + 1, bit);
+}
+
+int countLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter, unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
+{
+  for (int x = 16; x < BMP_WIDTH-16; x++) {
+    for (int y = 2; y < BIT_WIDTH-2; y++) {
+      if (image[x][y]) { // checks if there is a pixel in the char, through out the hole image
+        for (char bit = 0; bit < 8; bit++) {
+          if ((image[x][y] >> (7 - bit)) & 0x01) { // finds the first true bit, from left to right
+            if (!checkBoxLarge(image, x, y, bit)) { // checks if there can be a box around the bit with no white pixels (if there is a white pixel in the box, return 1 so it is negated)
+              paintCross(input_image, x, y * 8 + bit); // paints a cross on the image
+              counter++; // adds one to the counter of cells
+              eraseLargeCell(image, x, y, bit);
+              printf("counter: (%d, %d) \n" ,x,y*8+bit);
               break; // breaks out of the for loop, so it does not check the rest of the bits
             }
           }

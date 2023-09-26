@@ -37,9 +37,10 @@ void delay(int number_of_seconds)
 }
 
 // Main function
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 
+  start = clock();
   // printf("Reading image \n");
   read_bitmap(argv[1], input_image);
   // printf("greyscaling \n");
@@ -48,26 +49,17 @@ int main(int argc, char **argv)
   int threshold = otsuThreshold(greyImage);
   // printf("%d \nconverting to bits\n", threshold);
 
-  start = clock();
-  imageToBits(greyImage, bitImage, threshold - 23);
-  end = clock();
-
-  // printf("printing image\n");
-  //  printBits(bitImage, output_image);
-  //  write_bitmap(output_image, argv[2]);
-  // printf("Eroding image\n");
-
-  int counter = 0;
-  while (erode(bitImage, controlImage, 1))
-  {
-      // delay(1);
-      // printBits(bitImage, output_image);
-      // write_bitmap(output_image, argv[2]);
-
+  imageToBits(greyImage, bitImage, threshold-20);
+  int counter = countLarge(bitImage, counter, input_image);
+  erode(bitImage, controlImage, 0);
+  erode(bitImage, controlImage, 0);
+  counter += countLarge(bitImage, counter, input_image);
+  while (erode(bitImage, controlImage, 1)) {
     counter = count(bitImage, counter, input_image);
   }
   write_bitmap(input_image, argv[2]);
   printf("%d\n", counter);
+  end = clock();
   cpu_time_used = (double)(end - start);
   printf("Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
   return 0;
