@@ -2,11 +2,22 @@
 #include <stdio.h>
 #include "cbmp.h"
 
+// bitwise division by 3
+int divide3 (int number){
+    int result = 0;
+    while (number > 3){
+        result += number >> 2;
+        number = (number >> 2) + (number & 3);
+    }
+    if (number == 3) ++result;
+    return result;
+}
+
 // GreyScaling??
 void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH]) {
     for (int x = 0; x < BMP_WIDTH; x++) {
         for (int y = 0; y < BMP_HEIGTH; y++) {
-            int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]) / 3; // dont know if this is too complicated
+            int greyValue = divide3((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]); // dont know if this is too complicated
             greyScaled[x][y] = (char)greyValue;
         }
     }
