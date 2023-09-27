@@ -3,8 +3,7 @@
 #include "cbmp.h"
 
 // GreyScaling??
-void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH])
-{
+void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH]) {
     for (int x = 0; x < BMP_WIDTH; x++) {
         for (int y = 0; y < BMP_HEIGTH; y++) {
             int greyValue = ((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]) / 3; // dont know if this is too complicated
@@ -13,8 +12,7 @@ void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], 
     }
 }
 // Otsu
-unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH])
-{
+unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH]) {
     int pixels = BMP_HEIGTH * BMP_WIDTH; // amount of pixels in image
     int histogram[256] = { 0 };            // initialized histogram
 
@@ -68,8 +66,7 @@ unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH])
 // Convert pixels to bits
 void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
     unsigned char output[BMP_WIDTH][BIT_WIDTH],
-    int threshold)
-{
+    int threshold) {
     for (int x = 0; x < BMP_WIDTH; x++) {
         for (int y = 0; y < BMP_WIDTH; y++) {
             if (image[x][y] >= threshold) // If pixel should be white
@@ -82,8 +79,7 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
 }
 
 // convert bits to pixels
-void printBits(unsigned char image[BMP_WIDTH][BIT_WIDTH], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS])
-{
+void printBits(unsigned char image[BMP_WIDTH][BIT_WIDTH], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]) {
     for (int x = 0; x < BMP_WIDTH; x++) {
         for (int y = 0; y < BIT_WIDTH; y++) {
             for (int i = 0; i < 8; i++) {
