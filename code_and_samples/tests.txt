@@ -18,8 +18,15 @@ main.exe samples/MEDIUM/6MEDIUM.bmp samples/MEDIUM/6MEDIUMoutput.bmp samples/MED
 main.exe samples/MEDIUM/7MEDIUM.bmp samples/MEDIUM/7MEDIUMoutput.bmp samples/MEDIUM/7MEDIUMblackwhite.bmp
 main.exe samples/MEDIUM/8MEDIUM.bmp samples/MEDIUM/8MEDIUMoutput.bmp samples/MEDIUM/8MEDIUMblackwhite.bmp
 main.exe samples/MEDIUM/9MEDIUM.bmp samples/MEDIUM/9MEDIUMoutput.bmp samples/MEDIUM/9MEDIUMblackwhite.bmp
-main.exe samples/impossible/1IMPOSSIBLE.bmp samples/impossible/1IMPOSSIBLEoutput.bmp samples/impossible/1IMPOSSIBLEblackwhite.bmp
+main.exe samples/MEDIUM/10MEDIUM.bmp samples/MEDIUM/10MEDIUMoutput.bmp samples/MEDIUM/10MEDIUMblackwhite.bmp
 
-
-main.exe samples/easy/1EASY.bmp a1.bmp
-main.exe samples/test/edgeTest.bmp a1.bmp
+main.exe samples/HARD/1HARD.bmp samples/HARD/1HARDoutput.bmp samples/HARD/1HARDblackwhite.bmp
+main.exe samples/HARD/2HARD.bmp samples/HARD/2HARDoutput.bmp samples/HARD/2HARDblackwhite.bmp
+main.exe samples/HARD/3HARD.bmp samples/HARD/3HARDoutput.bmp samples/HARD/3HARDblackwhite.bmp
+main.exe samples/HARD/4HARD.bmp samples/HARD/4HARDoutput.bmp samples/HARD/4HARDblackwhite.bmp
+main.exe samples/HARD/5HARD.bmp samples/HARD/5HARDoutput.bmp samples/HARD/5HARDblackwhite.bmp
+main.exe samples/HARD/6HARD.bmp samples/HARD/6HARDoutput.bmp samples/HARD/6HARDblackwhite.bmp
+main.exe samples/HARD/7HARD.bmp samples/HARD/7HARDoutput.bmp samples/HARD/7HARDblackwhite.bmp
+main.exe samples/HARD/8HARD.bmp samples/HARD/8HARDoutput.bmp samples/HARD/8HARDblackwhite.bmp
+main.exe samples/HARD/9HARD.bmp samples/HARD/9HARDoutput.bmp samples/HARD/9HARDblackwhite.bmp
+main.exe samples/HARD/10HARD.bmp samples/HARD/10HARDoutput.bmp samples/HARD/10HARDblackwhite.bmp
