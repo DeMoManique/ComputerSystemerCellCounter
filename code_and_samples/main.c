@@ -41,8 +41,81 @@ void delay(int number_of_seconds) {
 
 // Main function
 int main(int argc, char** argv) {
+  int iterations = 1;
 
+<<<<<<< Updated upstream
   printf("tvunget plads %d alt plads %d", sizeof(input_image),sizeof(images));
+=======
+  // reads the iamge
+  read_bitmap(argv[1], input_image);
+  // printf("greyscaling \n");
+  // printf("calculating threshold: ");
+  start = clock();
+  for (int i = 0; i < iterations; i++) {
+    imageGreyScaling(input_image, images.greyImage);
+  }
+  end = clock();
+  double greyTime = (double)(end - start);
+
+  start = clock();
+  int threshold = 0;
+  for (int i = 0; i < iterations; i++) {
+    threshold = otsuThreshold(images.greyImage);
+  }
+  end = clock();
+  double threshTime = (double)(end - start);
+
+
+  // printf("%d \nconverting to bits\n", threshold);
+  start = clock();
+  for (int i = 0; i < iterations; i++) {
+    imageGreyScaling(input_image, images.greyImage);
+    imageToBits(images.greyImage, images.bitImages.bitImage, threshold);
+  }
+  end = clock();
+  double toBitTime = (double)(end - start) - greyTime;
+  int counter = 0;
+  start = clock();
+  for (int i = 0; i < iterations; i++) {
+    counter = 0;
+    imageGreyScaling(input_image, images.greyImage);
+    imageToBits(images.greyImage, images.bitImages.bitImage, threshold);
+    counter = countLarge(images.bitImages.bitImage, counter, input_image);
+    erode(images.bitImages.bitImage, images.bitImages.controlImage, 0);
+    erode(images.bitImages.bitImage, images.bitImages.controlImage, 0);
+    counter = countLarge(images.bitImages.bitImage, counter, input_image);
+    while (erode(images.bitImages.bitImage, images.bitImages.controlImage, 1)) {
+      counter = count(images.bitImages.bitImage, counter, input_image);
+    }
+  }
+  end = clock();
+  double erodePlusCount = (double)(end - start) - greyTime - toBitTime;
+
+  for (int i = 0; i < iterations; i++) {
+    imageGreyScaling(input_image, images.greyImage);
+    imageToBits(images.greyImage, images.bitImages.bitImage, threshold);
+    while(erode(images.bitImages.bitImage, images.bitImages.controlImage, 0));
+  }
+  end = clock();
+  double erodeTime = (double)(end - start) - greyTime - toBitTime;
+
+  for (int i = 0; i < iterations; i++) {
+    imageGreyScaling(input_image, images.greyImage);
+    imageToBits(images.greyImage, images.bitImages.bitImage, threshold);
+    while(erode(images.bitImages.bitImage, images.bitImages.controlImage, 1));
+  }
+  end = clock();
+  double erodeTimeTwo = (double)(end - start) - greyTime - toBitTime;
+
+
+  write_bitmap(input_image, argv[2]);
+  printf("grey time: %f ms\n", greyTime * 1000 / CLOCKS_PER_SEC);
+  printf("Otsu time: %f ms\n", threshTime * 1000 / CLOCKS_PER_SEC);
+  printf("To Bit time: %f ms\n", toBitTime * 1000 / CLOCKS_PER_SEC);
+  printf("Erode + count time: %f ms\n", erodePlusCount * 1000 / CLOCKS_PER_SEC);
+  printf("erode time: %f ms\n", erodeTime * 1000 / CLOCKS_PER_SEC);
+  printf("erode Two time: %f ms\n", erodeTimeTwo * 1000 / CLOCKS_PER_SEC);
+>>>>>>> Stashed changes
 
   return 0;
 }
