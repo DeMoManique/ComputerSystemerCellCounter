@@ -17,7 +17,6 @@ double cpu_time_used;
 unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
 unsigned char control_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS];
-unsigned char output_image_bit[BMP_WIDTH][119];
 
 // Function to turn image into black and white
 void toBlackWhite(unsigned char input_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS],
@@ -235,8 +234,12 @@ int main(int argc, char** argv) {
   // Load image from file
   read_bitmap(argv[1], input_image);
   start = clock();
+  toBlackWhite(input_image, output_image, threshold, thresholdLower);
+  end = clock();
+  double blackWhiteTime = (double)(end - start);
 
-  // Converting image to black and white
+  start = clock();
+
   toBlackWhite(input_image, output_image, threshold, thresholdLower);
   count = countCells(output_image, count, coords, 13);
 
@@ -270,8 +273,6 @@ int main(int argc, char** argv) {
       }
     }
   }
-
-
   for (int x = 0; x < BMP_WIDTH; x++) { // sets output_image to be the input_image
     for (int y = 0; y < BMP_HEIGTH; y++) {
       for (int i = 0; i < 3; i++) {
@@ -281,7 +282,7 @@ int main(int argc, char** argv) {
   }
   // paints the cross
   for (int i = 0; i < count; i++) {
-    printf("%d : %d\n" , coords[i][0],coords[i][1]);
+    printf("%d : %d\n", coords[i][0], coords[i][1]);
     for (int a = coords[i][0] - crossLength; a <= coords[i][0] + crossLength; a++) {
       for (int b = coords[i][1] - crossWidth; b <= coords[i][1] + crossWidth; b++) {
         if (a >= 0 && a < BMP_WIDTH && b >= 0 && b < BMP_HEIGTH) {
@@ -301,13 +302,36 @@ int main(int argc, char** argv) {
       }
     }
   }
-
-  printf("final count %d", count);
   end = clock();
-  write_bitmap(output_image, argv[2]);
-  cpu_time_used = (double)(end - start);
+  double ErodeCountTime = (double)(end - start) - blackWhiteTime;
+  start = clock();
+  for (int i = 0; i < 100; i++) {
+    toBlackWhite(input_image, output_image, threshold, thresholdLower);
+    while (erodeFirst(control_image, output_image)) { // while something was eroded
+    for (int x = 0; x < BMP_WIDTH; x++) { // copies the modified image to control image
+      for (int y = 0; y < BMP_HEIGTH; y++) {
+        for (int i = 0; i < 3; i++) {
+          control_image[x][y][i] = output_image[x][y][i];
+        }
+      }
+    }
+    }
 
-  printf(" Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
-
+    while (erode(control_image, output_image)) { // while something was eroded
+    for (int x = 0; x < BMP_WIDTH; x++) { // copies the modified image to control image
+      for (int y = 0; y < BMP_HEIGTH; y++) {
+        for (int i = 0; i < 3; i++) {
+          control_image[x][y][i] = output_image[x][y][i];
+        }
+      }
+    }
+    }
+  }
+  end = clock();
+  double erodeTime = (double)(end - start);
+  printf("BlackWhite time: %f ms\n", blackWhiteTime * 1000 / CLOCKS_PER_SEC);
+  printf("ErodeCount time: %f ms\n", ErodeCountTime * 1000 / CLOCKS_PER_SEC);
+  printf("Erode time: %f ms\n", erodeTime * 1000 / CLOCKS_PER_SEC);
+  printf("%d", sizeof(input_image)+sizeof(output_image)+ sizeof(control_image)+sizeof(coords));
   return 0;
 }
