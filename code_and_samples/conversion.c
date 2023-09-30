@@ -74,6 +74,9 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
                 output[x][y >> 3] |= (1 << (7 - (y & 0x07))); // output[x][y/8] | (1 << (7-y%8))
                 // placemnt of pixel
             }
+            else {
+                output[x][y >> 3] &= 0xFF-(1 << (7 - (y & 0x07)));
+            }
         }
     }
 }

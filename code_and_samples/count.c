@@ -185,6 +185,7 @@ int count(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter, unsigned char 
               paintCross(input_image, x, y * 8 + bit); // paints a cross on the image
               counter++; // adds one to the counter of cells
               eraseCell(image, x, y, bit); // erases the cell
+              printf("%d: (%d, %d) \n",counter, x, y * 8 + bit);
               break; // breaks out of the for loop, so it does not check the rest of the bits
             }
           }
@@ -245,7 +246,7 @@ int countLarge(unsigned char image[BMP_WIDTH][BIT_WIDTH], int counter, unsigned 
               paintCross(input_image, x, y * 8 + bit); // paints a cross on the image
               counter++; // adds one to the counter of cells
               eraseLargeCell(image, x, y, bit);
-              printf("counter: (%d, %d) \n", x, y * 8 + bit);
+              printf("%d: (%d, %d) \n",counter, x, y * 8 + bit);
               break; // breaks out of the for loop, so it does not check the rest of the bits
             }
           }
