@@ -154,13 +154,13 @@ char checkBox(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit)
   return 0;
 }
 void eraseCell(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit) {
-  if(y >= BIT_WIDTH || y < 0) return;
+  if (y >= BIT_WIDTH || y < 0) return;
   for (int xx = x - 3; xx <= x + 4; xx++) { // goes from 3 chars to the left to 4 chars to the right
     if (xx < 0 && xx >= BMP_WIDTH) { // If its to close to the left or the right edge, continue, because it is outside of the image
       continue;
     }
     if (bit == 3) { // If the bit is in the middel of the char, just set the char to 0
-        image[xx][y] = 0;
+      image[xx][y] = 0;
 
     }
     else if (bit < 3 && y >= 0) { // If the bit is above the middel
@@ -171,7 +171,7 @@ void eraseCell(unsigned char image[BMP_WIDTH][BIT_WIDTH], int x, int y, char bit
     }
     else if (y >= 0) { // If the bit is below the middel
       image[xx][y] &= 0xFF << (11 - bit); // ands the char with 0xFF shifted 11-bit to the left, -||-
-      if (y < BIT_WIDTH-1) { // If the bit is not in the bottom row
+      if (y < BIT_WIDTH - 1) { // If the bit is not in the bottom row
         image[xx][y + 1] &= 0xFF >> (bit - 3); // ands the char with 0xFF shifted bit-3 to the right, -||-
       }
     }

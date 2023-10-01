@@ -29,21 +29,10 @@ union images
   } bitImages;
 } images;
 
-void delay(int number_of_seconds)
-{
-  // Converting time into milli_seconds
-  int milli_seconds = 1000 * number_of_seconds;
-
-  // Storing start time
-  clock_t start_time = clock();
-
-  // looping till required time is not achieved
-  while (clock() < start_time + milli_seconds);
-}
-
 // Main function
 int main(int argc, char **argv)
 {
+  start = clock();
 
   // reads the iamge
   read_bitmap(argv[1], input_image);
@@ -56,7 +45,6 @@ int main(int argc, char **argv)
   // printf("%d \nconverting to bits\n", threshold);
 
   imageToBits(images.greyImage, images.bitImages.bitImage, threshold);
-  start = clock();
   int counter = countLarge(images.bitImages.bitImage, counter, input_image);
   erode(images.bitImages.bitImage, images.bitImages.controlImage, 0);
   erode(images.bitImages.bitImage, images.bitImages.controlImage, 0);
@@ -65,9 +53,9 @@ int main(int argc, char **argv)
   {
     counter = count(images.bitImages.bitImage, counter, input_image);
   }
-  end = clock();
   printf("%d\n", counter);
   write_bitmap(input_image, argv[2]);
+  end = clock();
   cpu_time_used = (double)(end - start);
   printf("Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
   //printf("bytes: %d", (sizeof(images)+sizeof(input_image)));

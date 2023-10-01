@@ -3,9 +3,9 @@
 #include "cbmp.h"
 
 // bitwise division by 3
-int divide3 (int number){
+int divide3(int number) {
     int result = 0;
-    while (number > 3){
+    while (number > 3) {
         result += number >> 2;
         number = (number >> 2) + (number & 3);
     }
@@ -13,15 +13,15 @@ int divide3 (int number){
     return result;
 }
 
-// GreyScaling??
+// GreyScaling
 void imageGreyScaling(unsigned char image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS], unsigned char greyScaled[BMP_WIDTH][BMP_HEIGTH]) {
     for (int x = 0; x < BMP_WIDTH; x++) {
         for (int y = 0; y < BMP_HEIGTH; y++) {
-            int greyValue = divide3((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]); // dont know if this is too complicated
-            greyScaled[x][y] = (char)greyValue;
+            greyScaled[x][y] = (char)divide3((int)image[x][y][0] + (int)image[x][y][1] + (int)image[x][y][2]);
         }
     }
 }
+
 // Otsu
 unsigned char otsuThreshold(unsigned char image[BMP_WIDTH][BMP_HEIGTH]) {
     int pixels = BMP_HEIGTH * BMP_WIDTH; // amount of pixels in image
@@ -82,22 +82,21 @@ void imageToBits(unsigned char image[BMP_WIDTH][BMP_HEIGTH],
         for (int y = 0; y < BMP_WIDTH; y++) {
             if (image[x][y] >= threshold) // If pixel should be white
             {
-                output[x][y >> 3] |= (1 << (7 - (y & 0x07))); // output[x][y/8] | (1 << (7-y%8))
-                // placemnt of pixel
+                output[x][y >> 3] |= (1 << (7 - (y & 0x07))); // output[x][y/8] | (1 << (7-y%8)) doing this places the pixel where it should be
             }
             else {
-                output[x][y >> 3] &= 0xFF-(1 << (7 - (y & 0x07)));
+                output[x][y >> 3] &= 0xFF - (1 << (7 - (y & 0x07))); //makes the bit 0
             }
         }
     }
 }
 
-// convert bits to pixels
+// convert bits to pixels this function was only for testing purposes
 void printBits(unsigned char image[BMP_WIDTH][BIT_WIDTH], unsigned char output_image[BMP_WIDTH][BMP_HEIGTH][BMP_CHANNELS]) {
     for (int x = 0; x < BMP_WIDTH; x++) {
         for (int y = 0; y < BIT_WIDTH; y++) {
             for (int i = 0; i < 8; i++) {
-                if ((image[x][y] >> (7 - i)) & 0x01) { // if the current bit is 1
+                if ((image[x][y] >> (7 - i)) & 0x01) { 
                     output_image[x][y * 8 + i][0] = 255;
                     output_image[x][y * 8 + i][1] = 255;
                     output_image[x][y * 8 + i][2] = 255;
