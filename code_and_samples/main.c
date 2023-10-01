@@ -49,7 +49,6 @@ int main(int argc, char **argv)
   read_bitmap(argv[1], input_image);
   // printf("greyscaling \n");
   // printf("calculating threshold: ");
-  start = clock();
   imageGreyScaling(input_image, images.greyImage);
   int threshold = otsuThreshold(images.greyImage);
 
@@ -57,16 +56,17 @@ int main(int argc, char **argv)
   // printf("%d \nconverting to bits\n", threshold);
 
   imageToBits(images.greyImage, images.bitImages.bitImage, threshold);
+  start = clock();
   int counter = countLarge(images.bitImages.bitImage, counter, input_image);
   erode(images.bitImages.bitImage, images.bitImages.controlImage, 0);
   erode(images.bitImages.bitImage, images.bitImages.controlImage, 0);
+  counter = countLarge(images.bitImages.bitImage, counter, input_image);
   while (erode(images.bitImages.bitImage, images.bitImages.controlImage, 1))
   {
     counter = count(images.bitImages.bitImage, counter, input_image);
-
   }
-  printf("%d\n", counter);
   end = clock();
+  printf("%d\n", counter);
   write_bitmap(input_image, argv[2]);
   cpu_time_used = (double)(end - start);
   printf("Total time: %f ms\n", cpu_time_used * 1000 / CLOCKS_PER_SEC);
